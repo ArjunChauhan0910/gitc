@@ -4,9 +4,9 @@
 #include <string.h>
 int print_welc_scr(WINDOW *win)
 {
-    box(win,0,0);
     if ( ! win )
         return -1;
+    box(win,0,0);
     wrefresh(win);
     int row,col;
     getmaxyx(win,row,col);
