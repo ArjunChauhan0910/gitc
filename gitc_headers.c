@@ -1,16 +1,29 @@
+/* Function headers for gitc
+ * Author:Aditya Visvanathan
+ * License:TBD
+ */
+
+
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <git2.h>
+
+/* function to print welcome screen message */
 int print_welc_scr(WINDOW *win)
 {
+    /* check if window initialized correctly */
     if ( ! win )
         return -1;
+
+    /* get window size */
     int row,col;
+    getmaxyx(win,row,col);
+
+    /* create fancy UI elements */
     box(win,0,0);
     wrefresh(win);
-    getmaxyx(win,row,col);
     static const char* title_msg_top = "gitc : Git-Curses";
     static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
     static const char* fol_msg = "Press any key to continue..";
@@ -23,25 +36,48 @@ int print_welc_scr(WINDOW *win)
     return 0;
 }
 
+/* Function to check if 'path' is a git repo */
 bool check_if_repo(char *path)
 {
+    /* initialize libgit2 */
     git_libgit2_init();
     git_repository *cur_repo;
+
+    /* try to open git repo in 'path' if possible, fails if not found */
     int repo_open_error = git_repository_open(&cur_repo,path);
+
+    /* deinitialize libgit2 cause job done */
     git_repository_free(cur_repo);
     git_libgit2_shutdown();
+
+    /* return true only if repo opened successfully */
     return repo_open_error == 0;
 }
+
+/* func to print error message if no git repo found */
 int print_git_repo_error(WINDOW *win)
 {
+    /* Check for window errors */
+    if ( ! win )
+        return -1;
+
+    /* messges to display */
     static const char* git_dir_err_msg = "Fatal! Not a git repository!";
     static const char* bottom_msg = "Press Q to quit";
+    
+    /* grab window borders */
     int row,col;
     getmaxyx(win,row,col);
-        clear();
-        mvwprintw(win,row/2,(col-strlen(git_dir_err_msg))/2,"%s",git_dir_err_msg);
-        mvwprintw(win,row-2,(col-strlen(bottom_msg))/2,"%s",bottom_msg);
-        wrefresh(win);
+
+    /* print both messages */
+    clear();
+    mvwprintw(win,row/2,(col-strlen(git_dir_err_msg))/2,"%s",git_dir_err_msg);
+    mvwprintw(win,row-2,(col-strlen(bottom_msg))/2,"%s",bottom_msg);
+    
+    /* refresh window to take effect */
+    wrefresh(win);
+
+    /* successful exit */
     return 0;
 }
 
