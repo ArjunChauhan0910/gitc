@@ -2,8 +2,7 @@
  * Author:Aditya Visvanathan
  * License:TBD
  */
-
-
+#define VER "1.0.0"
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,6 +30,7 @@ int print_welc_scr(WINDOW *win)
     mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
     mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
     mvwprintw(win,(row/2)+1,(col-strlen(fol_msg))/2,"%s",fol_msg);
+    mvwprintw(win,(row/2)+1,(col-strlen(VER))/2,"%s",VER);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
     return 0;
@@ -80,4 +80,3 @@ int print_git_repo_error(WINDOW *win)
     /* successful exit */
     return 0;
 }
-

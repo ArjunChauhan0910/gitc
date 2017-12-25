@@ -2,7 +2,7 @@
  * Author:Aditya Visvanathan
  * License:TBD
  */
-
+#define VER "1.0.0"
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,3 +17,4 @@ bool check_if_repo(char*);
 
 /* print error if git repo not found */
 int print_git_repo_error(WINDOW*);
+
