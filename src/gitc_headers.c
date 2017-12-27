@@ -2,7 +2,7 @@
  * Author:Aditya Visvanathan
  * License:TBD
  */
-#define VER "1.0.0"
+#define VER "Version:1.0.0"
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -29,8 +29,8 @@ int print_welc_scr(WINDOW *win)
     static const char* exit_msg = "Press Q to quit";
     mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
     mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
-    mvwprintw(win,(row/2)+1,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row/2)+1,(col-strlen(VER))/2,"%s",VER);
+    mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
     return 0;
@@ -41,17 +41,16 @@ bool check_if_repo(char *path)
 {
     /* initialize libgit2 */
     git_libgit2_init();
-    git_repository *cur_repo;
-
+    git_repository *cur_repo = NULL;
+    int error;
     /* try to open git repo in 'path' if possible, fails if not found */
-    int repo_open_error = git_repository_open(&cur_repo,path);
-
+    error = git_repository_open_ext(&cur_repo,".",0,NULL);
     /* deinitialize libgit2 cause job done */
     git_repository_free(cur_repo);
     git_libgit2_shutdown();
 
     /* return true only if repo opened successfully */
-    return repo_open_error == 0;
+    return error == 0;
 }
 
 /* func to print error message if no git repo found */
@@ -65,7 +64,7 @@ int print_git_repo_error(WINDOW *win)
     static const char* git_dir_err_msg = "Fatal! Not a git repository!";
     static const char* bottom_msg = "Press Q to quit";
     
-    /* grab window borders */
+   /* grab window borders */
     int row,col;
     getmaxyx(win,row,col);
 
