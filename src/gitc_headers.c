@@ -37,7 +37,7 @@ int print_welc_scr(WINDOW *win)
 }
 
 /* Function to check if 'path' is a git repo */
-bool check_if_repo(char *path)
+bool check_if_repo()
 {
     /* initialize libgit2 */
     git_libgit2_init();
@@ -79,3 +79,36 @@ int print_git_repo_error(WINDOW *win)
     /* successful exit */
     return 0;
 }
+
+int repo_commit_details_init(WINDOW *win)
+{
+    if ( ! win )
+        return -1;
+    static const char *commit_title_text = "Commit details";
+    git_libgit2_init();
+    git_repository *root_repo = NULL;
+    git_revwalk *walker = NULL;
+    int open_error = git_repository_open_ext(&root_repo,".",0,NULL);
+    git_revwalk_new(&walker,root_repo);
+    git_revwalk_sorting(walker,GIT_SORT_NONE);
+    git_revwalk_push_head(walker);
+    git_oid commit_id;
+    int lc = 0;
+    while( ! git_revwalk_next(&commit_id,walker) )
+    {
+        git_commit *commit_obj = NULL;
+        git_commit_lookup(&commit_obj,root_repo,&commit_id);
+        wclear(win);
+        mvwprintw(win,lc,0,"%s",git_oid_tostr_s(&commit_id));
+        wrefresh(win);
+        lc++;
+        git_commit_free(commit_obj);
+    }
+    git_revwalk_free(walker);
+    git_repository_free(root_repo);
+    git_libgit2_shutdown();
+    return 0;
+                
+
+}
+

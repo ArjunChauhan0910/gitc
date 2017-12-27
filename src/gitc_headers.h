@@ -13,8 +13,10 @@
 int print_welc_scr(WINDOW*);
 
 /* check for valid git repo */
-bool check_if_repo(char*);
+bool check_if_repo();
 
 /* print error if git repo not found */
 int print_git_repo_error(WINDOW*);
 
+/* grab repo details */
+int repo_commit_details_init(WINDOW*);
