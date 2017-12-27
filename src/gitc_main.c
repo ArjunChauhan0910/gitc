@@ -10,16 +10,17 @@
 #include <unistd.h>
 int main(int argc,char **argv)
 {
-    char cwd[256];
     initscr();
     noecho();
-    int key;
+    int key = 1;
     if( ! check_if_repo())
         print_git_repo_error(stdscr);
     else
-      //  print_welc_scr(stdscr);
-    while( (key = getch() ) != 113 )
+        print_welc_scr(stdscr);
+
+    while( (key = getch()) != 113)
     {
+        repo_commit_details_init(stdscr);
         if ( key == KEY_RESIZE )
         {
             clear();
@@ -30,9 +31,8 @@ int main(int argc,char **argv)
             }
             else
             {
-                repo_commit_details_init(stdscr);
-                
-
+                clear();
+                print_welc_scr(stdscr);
             }
 
         }   

@@ -20,3 +20,5 @@ int print_git_repo_error(WINDOW*);
 
 /* grab repo details */
 int repo_commit_details_init(WINDOW*);
+
+int is_init_key(int);

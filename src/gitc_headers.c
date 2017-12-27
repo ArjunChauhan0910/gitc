@@ -94,12 +94,13 @@ int repo_commit_details_init(WINDOW *win)
     git_revwalk_push_head(walker);
     git_oid commit_id;
     int lc = 0;
-    while( ! git_revwalk_next(&commit_id,walker) )
+    wclear(win);
+    box(win,0,0);
+    while(!  git_revwalk_next(&commit_id,walker) )
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        wclear(win);
-        mvwprintw(win,lc,0,"%s",git_oid_tostr_s(&commit_id));
+        mvwprintw(win,lc,0,"%s %s",git_commit_summary(commit_obj),git_oid_tostr_s(&commit_id));
         wrefresh(win);
         lc++;
         git_commit_free(commit_obj);
@@ -111,4 +112,11 @@ int repo_commit_details_init(WINDOW *win)
                 
 
 }
-
+int is_init_key(int key)
+{
+    if( key == 1 )
+        key  = 1;
+    else
+        key = getch();
+    return key;
+}
