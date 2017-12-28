@@ -38,7 +38,9 @@ int main(int argc,char **argv)
                     print_welc_scr(stdscr);
             }
 
-        }   
+        }
+       if ( if_welc_scr_done )
+          repo_commit_details_init(stdscr); 
         
     }   
     endwin();
