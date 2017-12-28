@@ -1,5 +1,9 @@
 # gitc : Git-curses
 
+## About
+
+gitc is a small ncurses-based viewing frontend for the Git version control system with a Terminal User Interface.
+
 ## Dependencies
 
 
