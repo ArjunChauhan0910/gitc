@@ -2,9 +2,10 @@
 
 ## Dependencies
 
-### For Debian-based distros
 
-#### Build dependencies
+### Build dependencies
+
+#### For Debian-based distros
 ```
 libncurses5-dev
 libgit2-dev
