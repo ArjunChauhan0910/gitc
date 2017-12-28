@@ -4,10 +4,13 @@
 
 ### For Debian-based distros
 
+#### Build dependencies
 ```
 libncurses5-dev
 libgit2-dev
 ```
+
+And their equivalents for other distros.
 
 ### Install
 
