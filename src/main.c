@@ -4,7 +4,7 @@
  * Author:Aditya Visvanathan
  * Version : 1.0.0
  */
-#include "gitc_headers.h"
+#include "gitc.h"
 #include <ncurses.h>
 #include <string.h>
 #include <unistd.h>
