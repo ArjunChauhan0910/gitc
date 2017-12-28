@@ -21,7 +21,6 @@ int main(int argc,char **argv)
 
     while( (key = getch()) != 113)
     {
-        repo_commit_details_init(stdscr);
         if ( key == KEY_RESIZE )
         {
             clear();
