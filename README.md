@@ -12,7 +12,7 @@ libgit2-dev
 
 And their equivalents for other distros.
 
-### Install
+## Install
 
 At the moment the only way to use is to build from sources:
 
