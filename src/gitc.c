@@ -3,6 +3,12 @@
  * License:TBD
  */
 #define VER "Version:1.0.0"
+#define CLEAN_EXIT_WELC_SCR 1
+#define CLEAN_EXIT_OPEN_ERR 2
+#define CLEAN_EXIT_REPO_DET_SCR 3
+#define ERR_EXIT_WELC_SCR -1
+#define ERR_EXIT_OPEN_ERR -2
+#define ERR_EXIT_REPO_DET_SCR -3
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,7 +17,7 @@
 int print_welc_scr(WINDOW* win)
 {
     if ( ! win )
-        return -1;
+        return ERR_EXIT_WELC_SCR;
 
     int row,col;
     getmaxyx(win,row,col);
@@ -28,7 +34,7 @@ int print_welc_scr(WINDOW* win)
     mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
-    return 0;
+    return CLEAN_EXIT_WELC_SCR;
 }
 
 bool check_if_repo()
@@ -46,7 +52,7 @@ bool check_if_repo()
 int print_git_repo_error(WINDOW *win)
 {
     if ( ! win )
-        return -1;
+        return ERR_EXIT_OPEN_ERR;
 
     static const char* git_dir_err_msg = "Fatal! Not a git repository!";
     static const char* bottom_msg = "Press Q to quit";
@@ -61,13 +67,13 @@ int print_git_repo_error(WINDOW *win)
     
     wrefresh(win);
 
-    return 0;
+    return CLEAN_EXIT_OPEN_ERR;
 }
 
 int repo_commit_details_init(WINDOW *win)
 {
     if ( ! win )
-        return -1;
+        return ERR_EXIT_REPO_DET_SCR;
     static const char *commit_title_text = "Commit details";
     git_libgit2_init();
     git_repository *root_repo = NULL;
@@ -92,15 +98,9 @@ int repo_commit_details_init(WINDOW *win)
     git_revwalk_free(walker);
     git_repository_free(root_repo);
     git_libgit2_shutdown();
-    return 0;
+    return CLEAN_EXIT_REPO_DET_SCR;
                 
 
 }
-int is_init_key(int key)
-{
-    if( key == 1 )
-        key  = 1;
-    else
-        key = getch();
-    return key;
-}
+
+

@@ -2,7 +2,13 @@
  * Author:Aditya Visvanathan
  * License:TBD
  */
-#define VER "1.0.0"
+#define VER "Version:1.0.0"
+#define CLEAN_EXIT_WELC_SCR 1
+#define CLEAN_EXIT_OPEN_ERR 2
+#define CLEAN_EXIT_REPO_DET_SCR 3
+#define ERR_EXIT_WELC_SCR -1
+#define ERR_EXIT_OPEN_ERR -2
+#define ERR_EXIT_REPO_DET_SCR -3
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,4 +27,5 @@ int print_git_repo_error(WINDOW*);
 /* grab repo details */
 int repo_commit_details_init(WINDOW*);
 
-int is_init_key(int);
+int is_init_key(int*);
+
