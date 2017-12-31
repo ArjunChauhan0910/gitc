@@ -1,12 +1,12 @@
 CC=gcc
-#CFLAGS=-Wall
+CFLAGS=-Wall
 LDFLAGS=-lncurses -lmenu -lgit2
 PREFIX=/usr/local
 BINDIR=$(PREFIX)/bin
 OBIN=gitc
 
 all:
-	$(CC)  src/gitc.c src/main.c $(LDFLAGS) -o $(OBIN)
+	$(CC)  $(CFLAGS) src/gitc.c src/main.c $(LDFLAGS) -o $(OBIN)
 
 install:
 	install -Dm755 $(OBIN) $(BINDIR)/$(OBIN)
