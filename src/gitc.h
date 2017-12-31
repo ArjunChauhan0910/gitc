@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <git2.h>
-
+#include <menu.h>
 /* print welcome screen message window */
 int print_welc_scr(WINDOW*);
 
@@ -27,5 +27,6 @@ int print_git_repo_error(WINDOW*);
 /* grab repo details */
 int repo_commit_details_init(WINDOW*);
 
-int is_init_key(int*);
+int get_commit_count();
+    
 

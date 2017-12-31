@@ -13,6 +13,8 @@
 int main(int argc,char **argv)
 {
     initscr();
+    cbreak();
+    keypad(stdscr,TRUE);
     noecho();
     int key = 0;
     static int prev_window;
