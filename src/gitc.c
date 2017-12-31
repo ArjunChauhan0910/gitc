@@ -108,8 +108,8 @@ int repo_commit_details_init(WINDOW *win)
     git_oid commit_id;
     int lc = 0;
     wclear(win);
-    box(win,0,0);
-    menu_items = (ITEM**)calloc(commit_count,sizeof(ITEM*));
+   // box(win,0,0);
+    menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
     while(!  git_revwalk_next(&commit_id,walker) )
     {
         git_commit *commit_obj = NULL;
@@ -120,7 +120,12 @@ int repo_commit_details_init(WINDOW *win)
         lc++;
         git_commit_free(commit_obj);
     }
-    
+    git_repository_free(root_repo);
+    git_libgit2_shutdown();
+    menu_items[lc] = (ITEM*)NULL;
+    commit_details_menu = new_menu((ITEM**)menu_items);
+    post_menu(commit_details_menu);
+    wrefresh(win); 
     while ( (key_press = getch()) != 113 )
     {
         switch(key_press)
@@ -133,12 +138,6 @@ int repo_commit_details_init(WINDOW *win)
                 break;
         }
     }
-    git_repository_free(root_repo);
-    git_libgit2_shutdown();
-    menu_items[lc+1] = (ITEM*)NULL;
-    commit_details_menu = new_menu((ITEM**)menu_items);
-    post_menu(commit_details_menu);
-    wrefresh(win);
     free_item(menu_items[0]);
     free_item(menu_items[1]);
     free_menu(commit_details_menu);
