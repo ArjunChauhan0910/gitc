@@ -9,17 +9,20 @@
 #define ERR_EXIT_WELC_SCR -1
 #define ERR_EXIT_OPEN_ERR -2
 #define ERR_EXIT_REPO_DET_SCR -3
+#define EXIT_KEYPRESS_CODE 113
+
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <git2.h>
 #include <menu.h>
+#include "gitc.h"
+
 int print_welc_scr(WINDOW* win)
 {
     if ( ! win )
         return ERR_EXIT_WELC_SCR;
-
     int row,col;
     getmaxyx(win,row,col);
 
@@ -46,7 +49,6 @@ bool check_if_repo()
     error = git_repository_open_ext(&cur_repo,".",0,NULL);
     git_repository_free(cur_repo);
     git_libgit2_shutdown();
-
     return error == 0;
 }
 int get_commit_count()
@@ -92,11 +94,10 @@ int repo_commit_details_init(WINDOW *win)
 {
     if ( ! win )
         return ERR_EXIT_REPO_DET_SCR;
-    static const char *commit_title_text = "Commit details";
-    int key_press;
+    int key_press,i = 0,lc = 0;
+    
     int commit_count = get_commit_count();
     MENU *commit_details_menu;
-    ITEM *cur_item;
     ITEM **menu_items;
     git_libgit2_init();
     git_repository *root_repo = NULL;
@@ -106,27 +107,26 @@ int repo_commit_details_init(WINDOW *win)
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
     git_oid commit_id;
-    int lc = 0;
     wclear(win);
-   // box(win,0,0);
+    box(win,0,0);
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
     while(!  git_revwalk_next(&commit_id,walker) )
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
         menu_items[lc] = new_item(git_commit_summary(commit_obj),git_commit_summary(commit_obj));
-       // mvwprintw(win,lc,0,"%s",git_commit_summary(commit_obj));
-       // wrefresh(win);
+        //mvwprintw(win,lc,0,"%s",git_commit_summary(commit_obj));
+        wrefresh(win);
         lc++;
         git_commit_free(commit_obj);
     }
     git_repository_free(root_repo);
     git_libgit2_shutdown();
-    menu_items[lc] = (ITEM*)NULL;
+    menu_items[commit_count] = (ITEM*)NULL;
     commit_details_menu = new_menu((ITEM**)menu_items);
     post_menu(commit_details_menu);
     wrefresh(win); 
-    while ( (key_press = getch()) != 113 )
+    while ( (key_press = getch()) != EXIT_KEYPRESS_CODE )
     {
         switch(key_press)
         {
@@ -138,8 +138,10 @@ int repo_commit_details_init(WINDOW *win)
                 break;
         }
     }
-    free_item(menu_items[0]);
-    free_item(menu_items[1]);
+    unpost_menu(commit_details_menu);
+    for(i = 0;i < commit_count;i++)
+        free_item(menu_items[i]);
+
     free_menu(commit_details_menu);
     return CLEAN_EXIT_REPO_DET_SCR;
                 

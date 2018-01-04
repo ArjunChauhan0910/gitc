@@ -10,12 +10,15 @@
 #include <ncurses.h>
 #include <string.h>
 #include <unistd.h>
+#include <locale.h>
 int main(int argc,char **argv)
 {
+    setlocale(LC_ALL,"en_US.UTF-8");
     initscr();
     cbreak();
     keypad(stdscr,TRUE);
     noecho();
+
     int key = 0;
     static int prev_window;
     if( ! check_if_repo())
