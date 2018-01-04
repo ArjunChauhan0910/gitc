@@ -34,7 +34,6 @@ int print_welc_scr(WINDOW* win)
     static const char* exit_msg = "Press Q to quit";
     mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
     mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
-    mvwprintw(win,(row/2)+1,(col-strlen(VER))/2,"%s",VER);
     mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
@@ -113,9 +112,7 @@ int repo_commit_details_init(WINDOW *win)
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-       // char *commit_msg_holder = strdup(git_commit_summary(commit_obj));
-        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),strdup(git_commit_summary(commit_obj)));
-        //mvwprintw(win,lc,0,"%s",git_commit_summary(commit_obj));
+        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),"");
         lc++;
         git_commit_free(commit_obj);
     }

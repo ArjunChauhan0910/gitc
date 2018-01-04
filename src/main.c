@@ -15,6 +15,7 @@ int main(int argc,char **argv)
 {
     setlocale(LC_ALL,"C");
     initscr();
+    curs_set(0);
     cbreak();
     keypad(stdscr,TRUE);
     noecho();
