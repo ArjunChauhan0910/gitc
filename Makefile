@@ -1,4 +1,3 @@
-CC=gcc
 CFLAGS=-Wall
 LDFLAGS=-lncurses -lmenu -lgit2
 PREFIX=/usr/local
