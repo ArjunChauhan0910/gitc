@@ -113,10 +113,9 @@ int repo_commit_details_init(WINDOW *win)
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        char *commit_msg_holder = strdup(git_commit_summary(commit_obj));
-        menu_items[lc] = new_item(commit_msg_holder,commit_msg_holder);
+       // char *commit_msg_holder = strdup(git_commit_summary(commit_obj));
+        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),strdup(git_commit_summary(commit_obj)));
         //mvwprintw(win,lc,0,"%s",git_commit_summary(commit_obj));
-        wrefresh(win);
         lc++;
         git_commit_free(commit_obj);
     }
@@ -141,8 +140,9 @@ int repo_commit_details_init(WINDOW *win)
     unpost_menu(commit_details_menu);
     for(i = 0;i < commit_count;i++)
         free_item(menu_items[i]);
-
+    
     free_menu(commit_details_menu);
+    wrefresh(win);
     return CLEAN_EXIT_REPO_DET_SCR;
                 
 }
