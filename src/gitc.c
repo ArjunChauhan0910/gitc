@@ -95,7 +95,6 @@ int repo_commit_details_init(WINDOW *win)
     if ( ! win )
         return ERR_EXIT_REPO_DET_SCR;
     int key_press,i = 0,lc = 0;
-    
     int commit_count = get_commit_count();
     MENU *commit_details_menu;
     ITEM **menu_items;
@@ -114,7 +113,8 @@ int repo_commit_details_init(WINDOW *win)
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        menu_items[lc] = new_item(git_commit_summary(commit_obj),git_commit_summary(commit_obj));
+        char *commit_msg_holder = strdup(git_commit_summary(commit_obj));
+        menu_items[lc] = new_item(commit_msg_holder,commit_msg_holder);
         //mvwprintw(win,lc,0,"%s",git_commit_summary(commit_obj));
         wrefresh(win);
         lc++;
