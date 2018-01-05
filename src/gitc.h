@@ -2,7 +2,7 @@
  * Author:Aditya Visvanathan
  * License:TBD
  */
-#define VER "Version:1.0.0"
+#define VER "Version"
 #define CLEAN_EXIT_WELC_SCR 1
 #define CLEAN_EXIT_OPEN_ERR 2
 #define CLEAN_EXIT_REPO_DET_SCR 3
