@@ -38,14 +38,15 @@ int main(int argc,char **argv)
                 else if ( prev_window == CLEAN_EXIT_OPEN_ERR )
                     prev_window = print_git_repo_error(stdscr);
                 else if ( prev_window == CLEAN_EXIT_REPO_DET_SCR )
-                    prev_window = repo_commit_details_init(stdscr);
+                    prev_window = repo_commit_menu(stdscr);
             
         }
         else if ( prev_window == CLEAN_EXIT_WELC_SCR )
-            prev_window = repo_commit_details_init(stdscr);
+            prev_window = repo_commit_menu(stdscr);
 
         
-    }   
+    }  
+    curs_set(1); 
     endwin();
 
     return CLEAN_EXIT_MAIN;

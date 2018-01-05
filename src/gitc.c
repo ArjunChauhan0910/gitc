@@ -26,7 +26,7 @@ int print_welc_scr(WINDOW* win)
     int row,col;
     getmaxyx(win,row,col);
 
-    box(win,0,0);
+    ;
     wrefresh(win);
     static const char* title_msg_top = "gitc : Git-Curses";
     static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
@@ -78,7 +78,7 @@ int print_git_repo_error(WINDOW *win)
     wclear(win);
     int row,col;
     getmaxyx(win,row,col);
-    box(win,0,0);
+    ;
     wrefresh(win);
 
     mvwprintw(win,row/2,(col-strlen(git_dir_err_msg))/2,"%s",git_dir_err_msg);
@@ -89,7 +89,7 @@ int print_git_repo_error(WINDOW *win)
     return CLEAN_EXIT_OPEN_ERR;
 }
 
-int repo_commit_details_init(WINDOW *win)
+int repo_commit_menu(WINDOW *win)
 {
     if ( ! win )
         return ERR_EXIT_REPO_DET_SCR;
@@ -106,7 +106,7 @@ int repo_commit_details_init(WINDOW *win)
     git_revwalk_push_head(walker);
     git_oid commit_id;
     wclear(win);
-    box(win,0,0);
+    ;
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
     while(!  git_revwalk_next(&commit_id,walker) )
     {
