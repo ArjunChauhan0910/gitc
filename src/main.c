@@ -12,14 +12,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <locale.h>
-#define EXIT_MAIN 1
+#define EXIT_MAIN_INCOMPLETE 1
 int main(int argc,char **argv)
 {
     setlocale(LC_ALL,"C");
     if ( ! check_if_repo() )
     {
         printf("Fatal! Not a Git Repository!\n");
-        return EXIT_MAIN;
+        return EXIT_MAIN_INCOMPLETE;
     }
 
     initscr();
@@ -29,30 +29,17 @@ int main(int argc,char **argv)
     noecho();
 
     int key = 0;
-    static int prev_window;
-    if( ! check_if_repo())
-        prev_window = print_git_repo_error(stdscr);
-    else
-        prev_window = print_welc_scr(stdscr);
-    
-    while( (key = getch() ) != EXIT_KEY_PRESS)
+    if( print_welc_scr(stdscr) == 0 )
     {
-        if ( key == KEY_RESIZE )
-        {
-            clear();
-            
-                if ( prev_window == CLEAN_EXIT_WELC_SCR )
-                    prev_window = print_welc_scr(stdscr);
-                else if ( prev_window == CLEAN_EXIT_OPEN_ERR )
-                    prev_window = print_git_repo_error(stdscr);
-                else if ( prev_window == CLEAN_EXIT_REPO_DET_SCR )
-                    prev_window = repo_commit_menu(stdscr);
-            
-        }
-        else if ( prev_window == CLEAN_EXIT_WELC_SCR )
-            prev_window = repo_commit_menu(stdscr);
+        curs_set(1);
+        endwin();
+        return 1;
+    }
 
-        
+    repo_commit_menu(stdscr);    
+    while( (key = getch() ) != EXIT_KEY_PRESS && check_if_repo() )
+    {
+        repo_commit_menu(stdscr);        
     }  
     curs_set(1); 
     endwin();

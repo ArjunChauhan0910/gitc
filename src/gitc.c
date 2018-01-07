@@ -23,21 +23,39 @@ int print_welc_scr(WINDOW* win)
 {
     if ( ! win )
         return ERR_EXIT_WELC_SCR;
-    int row,col;
+    int row,col,keypress;
     getmaxyx(win,row,col);
 
-    ;
+    
     wrefresh(win);
     static const char* title_msg_top = "gitc : Git-Curses";
     static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
     static const char* fol_msg = "Press any key to continue..";
     static const char* exit_msg = "Press Q to quit";
+    getmaxyx(win,row,col);
     mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
     mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
     mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
-    return CLEAN_EXIT_WELC_SCR;
+    while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
+    {
+        if ( keypress == KEY_RESIZE )
+        {
+
+            wclear(win);
+            getmaxyx(win,row,col);
+            mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
+            mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
+            mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
+            mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
+            wrefresh(win);
+        }
+        else
+            return 1;
+    }
+
+    return 0;
 }
 
 bool check_if_repo()
@@ -68,26 +86,6 @@ int get_commit_count()
 	return count;
 }
 
-int print_git_repo_error(WINDOW *win)
-{
-    if ( ! win )
-        return ERR_EXIT_OPEN_ERR;
-
-    static const char* git_dir_err_msg = "Fatal! Not a git repository!";
-    static const char* bottom_msg = "Press Q to quit";
-    wclear(win);
-    int row,col;
-    getmaxyx(win,row,col);
-    ;
-    wrefresh(win);
-
-    mvwprintw(win,row/2,(col-strlen(git_dir_err_msg))/2,"%s",git_dir_err_msg);
-    mvwprintw(win,row-2,(col-strlen(bottom_msg))/2,"%s",bottom_msg);
-    
-    wrefresh(win);
-
-    return CLEAN_EXIT_OPEN_ERR;
-}
 
 int repo_commit_menu(WINDOW *win)
 {
@@ -106,7 +104,7 @@ int repo_commit_menu(WINDOW *win)
     git_revwalk_push_head(walker);
     git_oid commit_id;
     wclear(win);
-    ;
+    
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
     while(!  git_revwalk_next(&commit_id,walker) )
     {
@@ -120,6 +118,7 @@ int repo_commit_menu(WINDOW *win)
     git_libgit2_shutdown();
     menu_items[commit_count] = (ITEM*)NULL;
     commit_details_menu = new_menu((ITEM**)menu_items);
+
     post_menu(commit_details_menu);
     wrefresh(win); 
     while ( (key_press = getch()) != EXIT_KEYPRESS_CODE )
