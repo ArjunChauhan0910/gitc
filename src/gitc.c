@@ -110,7 +110,8 @@ int repo_commit_menu(WINDOW *win)
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),"");
+        char *commit_author = strdup(git_commit_committer(commit_obj)->name);
+        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),commit_author);
         lc++;
         git_commit_free(commit_obj);
     }
