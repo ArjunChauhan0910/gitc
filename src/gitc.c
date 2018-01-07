@@ -3,12 +3,6 @@
  * License:TBD
  */
 #define VER "Version"
-#define CLEAN_EXIT_WELC_SCR 1
-#define CLEAN_EXIT_OPEN_ERR 2
-#define CLEAN_EXIT_REPO_DET_SCR 3
-#define ERR_EXIT_WELC_SCR -1
-#define ERR_EXIT_OPEN_ERR -2
-#define ERR_EXIT_REPO_DET_SCR -3
 #define EXIT_KEYPRESS_CODE 113
 
 #include <ncurses.h>
