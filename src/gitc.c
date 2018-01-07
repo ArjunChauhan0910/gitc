@@ -91,7 +91,8 @@ int repo_commit_menu(WINDOW *win)
 {
     if ( ! win )
         return ERR_EXIT_REPO_DET_SCR;
-    int key_press,i = 0,lc = 0;
+    int key_press,i = 0,lc = 0,row,col;
+    getmaxyx(win,row,col);
     int commit_count = get_commit_count();
     MENU *commit_details_menu;
     ITEM **menu_items;
@@ -119,7 +120,7 @@ int repo_commit_menu(WINDOW *win)
     git_libgit2_shutdown();
     menu_items[commit_count] = (ITEM*)NULL;
     commit_details_menu = new_menu((ITEM**)menu_items);
-
+    set_menu_format(commit_details_menu,row,1);
     post_menu(commit_details_menu);
     wrefresh(win); 
     while ( (key_press = getch()) != EXIT_KEYPRESS_CODE )
@@ -132,6 +133,14 @@ int repo_commit_menu(WINDOW *win)
             case KEY_UP:
                 menu_driver(commit_details_menu,REQ_UP_ITEM);
                 break;
+            case KEY_RESIZE:
+                getmaxyx(win,row,col);
+                unpost_menu(commit_details_menu);
+                wclear(win);
+                set_menu_format(commit_details_menu,row,1);
+                post_menu(commit_details_menu);
+                break;
+        
         }
     }
     unpost_menu(commit_details_menu);
