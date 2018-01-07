@@ -4,7 +4,7 @@
  */
 #define VER "Version"
 #define EXIT_KEYPRESS_CODE 113
-
+#define BOTTOM_WINDOW_OFFSET(a) (a - 14)
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -16,12 +16,8 @@
 int print_welc_scr(WINDOW* win)
 {
     if ( ! win )
-        return ERR_EXIT_WELC_SCR;
+        return -1;
     int row,col,keypress;
-    getmaxyx(win,row,col);
-
-    
-    wrefresh(win);
     static const char* title_msg_top = "gitc : Git-Curses";
     static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
     static const char* fol_msg = "Press any key to continue..";
@@ -84,11 +80,12 @@ int get_commit_count()
 int repo_commit_menu(WINDOW *win)
 {
     if ( ! win )
-        return ERR_EXIT_REPO_DET_SCR;
-    int key_press,i = 0,lc = 0,row,col;
+        return -1;
+    int keypress,i = 0,lc = 0,row,col;
     getmaxyx(win,row,col);
     int commit_count = get_commit_count();
-    MENU *commit_details_menu;
+    WINDOW *commit_details_win;
+    MENU *commit_summary_menu;
     ITEM **menu_items;
     ITEM *selected_item;
     git_libgit2_init();
@@ -106,47 +103,50 @@ int repo_commit_menu(WINDOW *win)
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        char *commit_author = strdup(git_commit_committer(commit_obj)->name);
-        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),commit_author);
+        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),strdup(git_commit_committer(commit_obj)->name));
         lc++;
         git_commit_free(commit_obj);
     }
     git_repository_free(root_repo);
     git_libgit2_shutdown();
     menu_items[commit_count] = (ITEM*)NULL;
-    commit_details_menu = new_menu((ITEM**)menu_items);
-    set_menu_format(commit_details_menu,row,1);
-    post_menu(commit_details_menu);
+    commit_summary_menu = new_menu((ITEM**)menu_items);
+    set_menu_format(commit_summary_menu,BOTTOM_WINDOW_OFFSET(row),1);
+    if(set_menu_spacing(commit_summary_menu,8,1,0) != E_BAD_ARGUMENT )
+        post_menu(commit_summary_menu);
     wrefresh(win); 
-    while ( (key_press = getch()) != EXIT_KEYPRESS_CODE )
+    while ( (keypress = getch()) != EXIT_KEYPRESS_CODE )
     {
-        switch(key_press)
+        switch(keypress)
         {
             case KEY_DOWN:
-                menu_driver(commit_details_menu,REQ_DOWN_ITEM);
+                menu_driver(commit_summary_menu,REQ_DOWN_ITEM);
                 break;
             case KEY_UP:
-                menu_driver(commit_details_menu,REQ_UP_ITEM);
+                menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
             case KEY_RESIZE:
                 getmaxyx(win,row,col);
-                selected_item = current_item(commit_details_menu);
-                unpost_menu(commit_details_menu);
+                selected_item = current_item(commit_summary_menu);
+                unpost_menu(commit_summary_menu);
                 wclear(win);
-                set_menu_format(commit_details_menu,row,1);
-                post_menu(commit_details_menu);
-                set_current_item(commit_details_menu,selected_item);
+                set_menu_format(commit_summary_menu,BOTTOM_WINDOW_OFFSET(row),1);          
+               if (  set_menu_spacing(commit_summary_menu,8,1,0) != E_BAD_ARGUMENT )
+               {
+                   post_menu(commit_summary_menu);
+                   set_current_item(commit_summary_menu,selected_item);
+               }
                 break;
         
         }
     }
-    unpost_menu(commit_details_menu);
+    unpost_menu(commit_summary_menu);
     for(i = 0;i < commit_count;i++)
         free_item(menu_items[i]);
     
-    free_menu(commit_details_menu);
+    free_menu(commit_summary_menu);
     wrefresh(win);
-    return CLEAN_EXIT_REPO_DET_SCR;
+    return 0;
                 
 }
 
