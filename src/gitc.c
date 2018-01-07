@@ -96,6 +96,7 @@ int repo_commit_menu(WINDOW *win)
     int commit_count = get_commit_count();
     MENU *commit_details_menu;
     ITEM **menu_items;
+    ITEM *selected_item;
     git_libgit2_init();
     git_repository *root_repo = NULL;
     git_revwalk *walker = NULL;
@@ -135,10 +136,12 @@ int repo_commit_menu(WINDOW *win)
                 break;
             case KEY_RESIZE:
                 getmaxyx(win,row,col);
+                selected_item = current_item(commit_details_menu);
                 unpost_menu(commit_details_menu);
                 wclear(win);
                 set_menu_format(commit_details_menu,row,1);
                 post_menu(commit_details_menu);
+                set_current_item(commit_details_menu,selected_item);
                 break;
         
         }
