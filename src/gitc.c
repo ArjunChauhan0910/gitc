@@ -4,7 +4,8 @@
  */
 #define VER "Version"
 #define EXIT_KEYPRESS_CODE 113
-#define BOTTOM_WINDOW_OFFSET(a) (a - 14)
+#define BOTTOM_WINDOW_OFFSET(a) (a - 10)
+
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -102,8 +103,10 @@ int repo_commit_menu(WINDOW *win)
     while(!  git_revwalk_next(&commit_id,walker) )
     {
         git_commit *commit_obj = NULL;
+        char commit_id_str[GIT_OID_HEXSZ + 1];
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),strdup(git_commit_committer(commit_obj)->name));
+        git_oid_tostr(commit_id_str,sizeof(commit_id_str),git_commit_id(commit_obj));
+        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),commit_id_str);
         lc++;
         git_commit_free(commit_obj);
     }
@@ -112,10 +115,10 @@ int repo_commit_menu(WINDOW *win)
     menu_items[commit_count] = (ITEM*)NULL;
     commit_summary_menu = new_menu((ITEM**)menu_items);
     set_menu_format(commit_summary_menu,BOTTOM_WINDOW_OFFSET(row),1);
-    if(set_menu_spacing(commit_summary_menu,8,1,0) != E_BAD_ARGUMENT )
+    set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
         post_menu(commit_summary_menu);
-    wrefresh(win); 
-    while ( (keypress = getch()) != EXIT_KEYPRESS_CODE )
+    wrefresh(win);
+    while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
     {
         switch(keypress)
         {
@@ -131,11 +134,10 @@ int repo_commit_menu(WINDOW *win)
                 unpost_menu(commit_summary_menu);
                 wclear(win);
                 set_menu_format(commit_summary_menu,BOTTOM_WINDOW_OFFSET(row),1);          
-               if (  set_menu_spacing(commit_summary_menu,8,1,0) != E_BAD_ARGUMENT )
-               {
-                   post_menu(commit_summary_menu);
-                   set_current_item(commit_summary_menu,selected_item);
-               }
+               set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
+               post_menu(commit_summary_menu);
+               set_current_item(commit_summary_menu,selected_item);
+               
                 break;
         
         }

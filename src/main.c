@@ -7,6 +7,7 @@
 #define EXIT_KEY_PRESS 113
 #define CLEAN_EXIT_MAIN 0
 
+
 #include "gitc.h"
 #include <ncurses.h>
 #include <string.h>
@@ -18,7 +19,7 @@ int main(int argc,char **argv)
     setlocale(LC_ALL,"C");
     if ( ! check_if_repo() )
     {
-        printf("Fatal! Not a Git Repository!\n");
+        printf("gitc : Fatal! Not a Git Repository!\n");
         return EXIT_MAIN_INCOMPLETE;
     }
 
