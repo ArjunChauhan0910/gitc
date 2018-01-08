@@ -1,6 +1,6 @@
 CFLAGS=-Wall
 LDFLAGS=-lncurses -lmenu -lgit2
-PREFIX=/usr/local
+PREFIX=$(HOME)/.local/
 BINDIR=$(PREFIX)/bin
 OBIN=gitc
 
@@ -9,6 +9,7 @@ all:
 
 install:
 	install -Dm755 $(OBIN) $(BINDIR)/$(OBIN)
+	rm $(OBIN)
 
 
 uninstall:
