@@ -103,10 +103,8 @@ int repo_commit_menu(WINDOW *win)
     while(!  git_revwalk_next(&commit_id,walker) )
     {
         git_commit *commit_obj = NULL;
-        char commit_id_str[GIT_OID_HEXSZ + 1];
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        git_oid_tostr(commit_id_str,sizeof(commit_id_str),git_commit_id(commit_obj));
-        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),commit_id_str);
+        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),strdup(git_oid_tostr_s(&commit_id)));
         lc++;
         git_commit_free(commit_obj);
     }
