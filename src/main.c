@@ -33,6 +33,7 @@ int main(int argc,char **argv)
     if( print_welc_scr(stdscr) == 0 )
     {
         curs_set(1);
+        nocbreak();
         endwin();
         return 1;
     }
@@ -40,9 +41,10 @@ int main(int argc,char **argv)
     repo_commit_menu(stdscr);    
     while( (key = getch() ) != EXIT_KEY_PRESS && check_if_repo() )
     {
-        repo_commit_menu(stdscr);        
+        repo_commit_menu(stdscr);
     }  
     curs_set(1); 
+    nocbreak();
     endwin();
 
     return CLEAN_EXIT_MAIN;

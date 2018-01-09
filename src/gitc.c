@@ -88,9 +88,9 @@ int repo_commit_menu(WINDOW *win)
     int keypress,i = 0,lc = 0,row,col;
     getmaxyx(win,row,col);
     int commit_count = get_commit_count();
-    WINDOW *commit_details_win;
     MENU *commit_summary_menu;
     ITEM **menu_items;
+    WINDOW *commit_diff_win = subwin(win,
     ITEM *selected_item;
     git_libgit2_init();
     git_repository *root_repo = NULL;
@@ -113,13 +113,16 @@ int repo_commit_menu(WINDOW *win)
         lc++;
         git_commit_free(commit_obj);
     }
+    wrefresh(win);
     git_repository_free(root_repo);
     git_libgit2_shutdown();
     menu_items[commit_count] = (ITEM*)NULL;
     commit_summary_menu = new_menu((ITEM**)menu_items);
     set_menu_format(commit_summary_menu,BOTTOM_WINDOW_OFFSET(row),1);
     set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
-        post_menu(commit_summary_menu);
+    post_menu(commit_summary_menu);
+    wrefresh(win);
+    mvwprintw(win,row,1,"sample");
     wrefresh(win);
     while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
     {
@@ -139,13 +142,14 @@ int repo_commit_menu(WINDOW *win)
                 unpost_menu(commit_summary_menu);
                 wclear(win);
                 set_menu_format(commit_summary_menu,BOTTOM_WINDOW_OFFSET(row),1);          
-               set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
-               post_menu(commit_summary_menu);
-               set_current_item(commit_summary_menu,selected_item);
-               
+                set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
+                post_menu(commit_summary_menu);
+                set_current_item(commit_summary_menu,selected_item);
+                mvwprintw(win,row,1,"sample");
+                wrefresh(win);
                 break;
-        
         }
+
     }
     unpost_menu(commit_summary_menu);
     for(i = 0;i < commit_count;i++)
