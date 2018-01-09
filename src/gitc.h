@@ -22,5 +22,4 @@ int print_git_repo_error(WINDOW*);
 int repo_commit_menu(WINDOW*);
 
 int get_commit_count();
-    
 

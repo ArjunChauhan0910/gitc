@@ -5,6 +5,9 @@
 #define VER "Version"
 #define EXIT_KEYPRESS_CODE 113
 #define BOTTOM_WINDOW_OFFSET(a) (a - 10)
+#define VI_KEY_UP 107
+#define VI_KEY_DOWN 106
+
 
 #include <ncurses.h>
 #include <stdlib.h>
@@ -104,7 +107,9 @@ int repo_commit_menu(WINDOW *win)
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
-        menu_items[lc] = new_item(strdup(git_commit_summary(commit_obj)),strdup(git_oid_tostr_s(&commit_id)));
+        char* commit_summary_str = strdup(git_commit_summary(commit_obj));
+        char* commit_id_str = strdup(git_oid_tostr_s(&commit_id));
+        menu_items[lc] = new_item(commit_summary_str,commit_id_str);
         lc++;
         git_commit_free(commit_obj);
     }
@@ -120,9 +125,11 @@ int repo_commit_menu(WINDOW *win)
     {
         switch(keypress)
         {
+            case VI_KEY_DOWN:
             case KEY_DOWN:
                 menu_driver(commit_summary_menu,REQ_DOWN_ITEM);
                 break;
+            case VI_KEY_UP:
             case KEY_UP:
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
