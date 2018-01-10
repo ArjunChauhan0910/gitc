@@ -3,6 +3,10 @@
  * License:TBD
  */
 #define VER "Version"
+#ifndef GITC_H_
+#define GITC_H_
+
+
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,4 +26,4 @@ int print_git_repo_error(WINDOW*);
 int repo_commit_menu(WINDOW*);
 
 int get_commit_count();
-
+#endif
