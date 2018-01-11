@@ -92,7 +92,7 @@ int repo_commit_menu(WINDOW *win)
     ITEM **menu_items;
     ITEM *selected_item;
     WINDOW *commit_diff_win;
-    commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row) ,0);
+    commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
     getmaxyx(commit_diff_win,sub_row,sub_col);
     git_libgit2_init();
     git_repository *root_repo = NULL;
@@ -101,7 +101,7 @@ int repo_commit_menu(WINDOW *win)
     git_revwalk_new(&walker,root_repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
-    git_oid commit_id;
+    git_oid commit_id,commit_diff_oid;
     wclear(win);
 
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
@@ -122,10 +122,11 @@ int repo_commit_menu(WINDOW *win)
     set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
     set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
     post_menu(commit_summary_menu);
-    wrefresh(win);  
+    wrefresh(win); 
     box(commit_diff_win,0,0);
-    mvwprintw(commit_diff_win,sub_row/2,(sub_col-6)/2,"sample");
     wrefresh(commit_diff_win);
+    wrefresh(win);
+    getmaxyx(commit_diff_win,sub_row,sub_col); 
     while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
     {
         switch(keypress)
@@ -139,23 +140,29 @@ int repo_commit_menu(WINDOW *win)
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
             case KEY_RESIZE:
-                delwin(commit_diff_win);
                 getmaxyx(win,row,col);
-                commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
-                getmaxyx(commit_diff_win,sub_row,sub_col);
                 selected_item = current_item(commit_summary_menu);
                 unpost_menu(commit_summary_menu);
                 wclear(win);
+                wresize(commit_diff_win,10,col);
+                mvwin(commit_diff_win,BOTTOM_MENU_OFFSET(row),0);
+                getmaxyx(commit_diff_win,sub_row,sub_col);
                 set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
                 post_menu(commit_summary_menu);
                 set_current_item(commit_summary_menu,selected_item);
+                char *subtext = strdup(item_name(selected_item));
+                mvwprintw(commit_diff_win,sub_row/2,(sub_col-strlen(subtext))/2,"%s",subtext);
                 wrefresh(win);
-                wclear(commit_diff_win);
-                box(commit_diff_win,0,0);
                 wrefresh(commit_diff_win);
-
+                
                 break;
         }
+        char *text = strdup(item_name(current_item(commit_summary_menu)));
+        delwin(commit_diff_win);
+        commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
+        box(commit_diff_win,0,0);
+        mvwprintw(commit_diff_win,sub_row/2,(sub_col-strlen(text))/2,"%s",text);
+        wrefresh(commit_diff_win);
 
     }
     unpost_menu(commit_summary_menu);
