@@ -39,10 +39,6 @@ int main(int argc,char **argv)
     }
 
     repo_commit_menu(stdscr);    
-    while( (key = getch() ) != EXIT_KEY_PRESS && check_if_repo() )
-    {
-        repo_commit_menu(stdscr);
-    }  
     curs_set(1); 
     nocbreak();
     endwin();
