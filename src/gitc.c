@@ -4,10 +4,10 @@
  */
 #define VER "Version"
 #define EXIT_KEYPRESS_CODE 113
-#define BOTTOM_WINDOW_OFFSET(a) (a - 10)
-#define VI_KEY_UP 107
-#define VI_KEY_DOWN 106
-#define BOTTOM_MENU_OFFSET(a) (a - 10)
+#define BOTTOM_WINDOW_OFFSET(a) (a - 19)
+#define VI_KEY_UP 197
+#define VI_KEY_DOWN 196
+#define BOTTOM_MENU_OFFSET(a) (a - 19)
 
 #include <ncurses.h>
 #include <stdlib.h>
@@ -108,7 +108,7 @@ int repo_commit_menu(WINDOW *win)
     ITEM **menu_items;
     ITEM *selected_item;
     WINDOW *commit_diff_win;
-    commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
+    commit_diff_win = newwin(19,col,BOTTOM_MENU_OFFSET(row),0);
     getmaxyx(commit_diff_win,sub_row,sub_col);
     git_libgit2_init();
     git_repository *root_repo = NULL;
@@ -164,7 +164,7 @@ int repo_commit_menu(WINDOW *win)
                 selected_item = current_item(commit_summary_menu);
                 unpost_menu(commit_summary_menu);
                 wclear(win);
-                wresize(commit_diff_win,10,col);
+                wresize(commit_diff_win,19,col);
                 mvwin(commit_diff_win,BOTTOM_MENU_OFFSET(row),0);
                 getmaxyx(commit_diff_win,sub_row,sub_col);
                 set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
@@ -187,7 +187,7 @@ int repo_commit_menu(WINDOW *win)
         }
         selected_item = current_item(commit_summary_menu);
         delwin(commit_diff_win);
-        commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
+        commit_diff_win = newwin(19,col,BOTTOM_MENU_OFFSET(row),0);
         box(commit_diff_win,0,0);
         char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
         git_oid_fromstr(&sel_oid,oid_str);
@@ -197,7 +197,7 @@ int repo_commit_menu(WINDOW *win)
         git_commit_tree(&parent_tree,parent_commit);
         git_diff_tree_to_tree(&diff,root_repo,parent_tree,commit_tree,NULL);
         git_diff_get_stats(&stats,diff);
-        git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_SHORT,80);
+        git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_NUMBER,80);
         time = git_commit_time(sel_commit);
         
         mvwprintw(commit_diff_win,1,2,"Commit message : %s",item_name(selected_item));
