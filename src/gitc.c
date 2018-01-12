@@ -169,19 +169,26 @@ int repo_commit_menu(WINDOW *win)
                 box(commit_diff_win,0,0);
                 git_oid_fromstr(&sel_oid,item_description(selected_item));
                 git_commit_lookup(&sel_commit,root_repo,&sel_oid);
-                wprint_text_mid(commit_diff_win,strdup(git_commit_committer(sel_commit)->name));
+                mvwprintw(commit_diff_win,1,2,"Commit message:%s",item_name(selected_item));
+                mvwprintw(commit_diff_win,2,2,"Commit ID:%s",item_description(selected_item));
+                mvwprintw(commit_diff_win,3,2,"Committer:%s",strdup(git_commit_committer(sel_commit)->name));
+                mvwprintw(commit_diff_win,4,2,"Author:%s",strdup(git_commit_author(sel_commit)->name));
                 wrefresh(win);
                 wrefresh(commit_diff_win);
                 
                 break;
         }
+        selected_item = current_item(commit_summary_menu);
         delwin(commit_diff_win);
         commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
         box(commit_diff_win,0,0);
         char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
         git_oid_fromstr(&sel_oid,oid_str);
         git_commit_lookup(&sel_commit,root_repo,&sel_oid);
-        wprint_text_mid(commit_diff_win,strdup(git_commit_committer(sel_commit)->name));
+        mvwprintw(commit_diff_win,1,2,"Commit message:%s",item_name(selected_item));
+        mvwprintw(commit_diff_win,2,2,"Commit ID:%s",item_description(selected_item));
+        mvwprintw(commit_diff_win,3,2,"Committer:%s",strdup(git_commit_committer(sel_commit)->name));
+        mvwprintw(commit_diff_win,4,2,"Author:%s",strdup(git_commit_author(sel_commit)->name));
         wrefresh(commit_diff_win);
 
     }
