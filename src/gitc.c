@@ -170,16 +170,6 @@ int repo_commit_menu(WINDOW *win)
                 set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
                 post_menu(commit_summary_menu);
                 set_current_item(commit_summary_menu,selected_item);
-                wclear(commit_diff_win);
-                box(commit_diff_win,0,0);
-                git_oid_fromstr(&sel_oid,item_description(selected_item));
-                git_commit_lookup(&sel_commit,root_repo,&sel_oid);
-                time = git_commit_time(sel_commit);
-                mvwprintw(commit_diff_win,1,2,"Commit message : %s",item_name(selected_item));
-                mvwprintw(commit_diff_win,2,2,"Commit ID : %s",item_description(selected_item));
-                mvwprintw(commit_diff_win,3,2,"Author : %s",strdup(git_commit_author(sel_commit)->name));
-                mvwprintw(commit_diff_win,4,2,"Email : %s",strdup(git_commit_author(sel_commit)->email));
-                mvwprintw(commit_diff_win,5,2,"Time : %s",ctime(&time));
                 wrefresh(win);
                 wrefresh(commit_diff_win);
                 
@@ -197,7 +187,7 @@ int repo_commit_menu(WINDOW *win)
         git_commit_tree(&parent_tree,parent_commit);
         git_diff_tree_to_tree(&diff,root_repo,parent_tree,commit_tree,NULL);
         git_diff_get_stats(&stats,diff);
-        git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_NUMBER,80);
+        git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_FULL,80);
         time = git_commit_time(sel_commit);
         
         mvwprintw(commit_diff_win,1,2,"Commit message : %s",item_name(selected_item));
@@ -206,7 +196,7 @@ int repo_commit_menu(WINDOW *win)
         mvwprintw(commit_diff_win,4,2,"Email : %s",strdup(git_commit_author(sel_commit)->email));
         mvwprintw(commit_diff_win,5,2,"Time : %s",ctime(&time));
         
-        mvwprintw(commit_diff_win,6,2,gbuf.ptr);
+        mvwprintw(commit_diff_win,7,2,gbuf.ptr);
         git_buf_free(&gbuf);
         git_diff_stats_free(stats);
         wrefresh(commit_diff_win);
