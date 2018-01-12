@@ -52,6 +52,16 @@ int print_welc_scr(WINDOW* win)
     return 0;
 }
 
+int wprint_text_mid(WINDOW *win,char *text)
+{
+    if ( ! win )
+        return 1;
+    int row,col;
+    getmaxyx(win,row,col);
+    mvwprintw(win,row/2,(col-strlen(text))/2,"%s",text);
+    return 0;
+}
+
 bool check_if_repo()
 {
     git_libgit2_init();
@@ -80,6 +90,12 @@ int get_commit_count()
 	return count;
 }
 
+char *get_committer_name_from_oid(git_oid oid,git_repository *repo)
+{
+    git_commit *commit = NULL;
+    git_commit_lookup(&commit,repo,&oid);
+    return strdup(git_commit_committer(commit)->name);
+}
 
 int repo_commit_menu(WINDOW *win)
 {
@@ -101,9 +117,9 @@ int repo_commit_menu(WINDOW *win)
     git_revwalk_new(&walker,root_repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
-    git_oid commit_id,commit_diff_oid;
+    git_oid commit_id,sel_oid;
+    git_commit *sel_commit = NULL;
     wclear(win);
-
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
     while(!  git_revwalk_next(&commit_id,walker) )
     {
@@ -115,8 +131,6 @@ int repo_commit_menu(WINDOW *win)
         lc++;
         git_commit_free(commit_obj);
     }
-    git_repository_free(root_repo);
-    git_libgit2_shutdown();
     menu_items[commit_count] = (ITEM*)NULL;
     commit_summary_menu = new_menu((ITEM**)menu_items);
     set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
@@ -124,6 +138,7 @@ int repo_commit_menu(WINDOW *win)
     post_menu(commit_summary_menu);
     wrefresh(win); 
     box(commit_diff_win,0,0);
+    
     wrefresh(commit_diff_win);
     wrefresh(win);
     getmaxyx(commit_diff_win,sub_row,sub_col); 
@@ -150,18 +165,23 @@ int repo_commit_menu(WINDOW *win)
                 set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
                 post_menu(commit_summary_menu);
                 set_current_item(commit_summary_menu,selected_item);
-                char *subtext = strdup(item_name(selected_item));
-                mvwprintw(commit_diff_win,sub_row/2,(sub_col-strlen(subtext))/2,"%s",subtext);
+                wclear(commit_diff_win);
+                box(commit_diff_win,0,0);
+                git_oid_fromstr(&sel_oid,item_description(selected_item));
+                git_commit_lookup(&sel_commit,root_repo,&sel_oid);
+                wprint_text_mid(commit_diff_win,strdup(git_commit_committer(sel_commit)->name));
                 wrefresh(win);
                 wrefresh(commit_diff_win);
                 
                 break;
         }
-        char *text = strdup(item_name(current_item(commit_summary_menu)));
         delwin(commit_diff_win);
         commit_diff_win = newwin(10,col,BOTTOM_MENU_OFFSET(row),0);
         box(commit_diff_win,0,0);
-        mvwprintw(commit_diff_win,sub_row/2,(sub_col-strlen(text))/2,"%s",text);
+        char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
+        git_oid_fromstr(&sel_oid,oid_str);
+        git_commit_lookup(&sel_commit,root_repo,&sel_oid);
+        wprint_text_mid(commit_diff_win,strdup(git_commit_committer(sel_commit)->name));
         wrefresh(commit_diff_win);
 
     }
@@ -172,6 +192,9 @@ int repo_commit_menu(WINDOW *win)
     free_menu(commit_summary_menu);
     wrefresh(win);
     delwin(commit_diff_win);
+    git_commit_free(sel_commit);
+    git_repository_free(root_repo);
+    git_libgit2_shutdown();
     return 0;
                 
 }
