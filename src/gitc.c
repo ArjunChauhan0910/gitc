@@ -119,6 +119,7 @@ int repo_commit_menu(WINDOW *win)
     git_revwalk_push_head(walker);
     git_oid commit_id,sel_oid;
     git_commit *sel_commit = NULL;
+    time_t time;
     wclear(win);
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
     while(!  git_revwalk_next(&commit_id,walker) )
@@ -138,7 +139,6 @@ int repo_commit_menu(WINDOW *win)
     post_menu(commit_summary_menu);
     wrefresh(win); 
     box(commit_diff_win,0,0);
-    
     wrefresh(commit_diff_win);
     wrefresh(win);
     getmaxyx(commit_diff_win,sub_row,sub_col); 
@@ -169,10 +169,12 @@ int repo_commit_menu(WINDOW *win)
                 box(commit_diff_win,0,0);
                 git_oid_fromstr(&sel_oid,item_description(selected_item));
                 git_commit_lookup(&sel_commit,root_repo,&sel_oid);
+                time = git_commit_time(sel_commit);
                 mvwprintw(commit_diff_win,1,2,"Commit message:%s",item_name(selected_item));
                 mvwprintw(commit_diff_win,2,2,"Commit ID:%s",item_description(selected_item));
-                mvwprintw(commit_diff_win,3,2,"Committer:%s",strdup(git_commit_committer(sel_commit)->name));
-                mvwprintw(commit_diff_win,4,2,"Author:%s",strdup(git_commit_author(sel_commit)->name));
+                mvwprintw(commit_diff_win,3,2,"Author:%s",strdup(git_commit_author(sel_commit)->name));
+                mvwprintw(commit_diff_win,4,2,"Email:%s",strdup(git_commit_author(sel_commit)->email));
+                mvwprintw(commit_diff_win,5,2,"Time:%s",ctime(&time));
                 wrefresh(win);
                 wrefresh(commit_diff_win);
                 
@@ -185,11 +187,13 @@ int repo_commit_menu(WINDOW *win)
         char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
         git_oid_fromstr(&sel_oid,oid_str);
         git_commit_lookup(&sel_commit,root_repo,&sel_oid);
+        time = git_commit_time(sel_commit);
         mvwprintw(commit_diff_win,1,2,"Commit message:%s",item_name(selected_item));
         mvwprintw(commit_diff_win,2,2,"Commit ID:%s",item_description(selected_item));
-        mvwprintw(commit_diff_win,3,2,"Committer:%s",strdup(git_commit_committer(sel_commit)->name));
-        mvwprintw(commit_diff_win,4,2,"Author:%s",strdup(git_commit_author(sel_commit)->name));
-        wrefresh(commit_diff_win);
+        mvwprintw(commit_diff_win,3,2,"Author:%s",strdup(git_commit_author(sel_commit)->name));
+        mvwprintw(commit_diff_win,4,2,"Email:%s",strdup(git_commit_author(sel_commit)->email));
+        mvwprintw(commit_diff_win,5,2,"Time:%s",ctime(&time));
+                wrefresh(commit_diff_win);
 
     }
     unpost_menu(commit_summary_menu);
