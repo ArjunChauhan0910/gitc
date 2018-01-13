@@ -5,8 +5,8 @@
 #define VER "Version"
 #define EXIT_KEYPRESS_CODE 113
 #define BOTTOM_WINDOW_OFFSET(a) (a - 19)
-#define VI_KEY_UP 197
-#define VI_KEY_DOWN 196
+#define VI_KEY_UP 107
+#define VI_KEY_DOWN 106
 #define BOTTOM_MENU_OFFSET(a) (a - 19)
 
 #include <ncurses.h>
