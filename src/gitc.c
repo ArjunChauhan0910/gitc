@@ -196,7 +196,8 @@ int repo_commit_menu(WINDOW *win)
         mvwprintw(commit_diff_win,4,2,"Email : %s",strdup(git_commit_author(sel_commit)->email));
         mvwprintw(commit_diff_win,5,2,"Time : %s",ctime(&time));
         
-        mvwprintw(commit_diff_win,7,2,gbuf.ptr);
+        mvwprintw(commit_diff_win,7,0,gbuf.ptr);
+        box(commit_diff_win,0,0);
         git_buf_free(&gbuf);
         git_diff_stats_free(stats);
         wrefresh(commit_diff_win);
