@@ -1,5 +1,5 @@
 LDFLAGS=-lncurses -lmenu -lgit2
-PREFIX=$(HOME)/.local/
+PREFIX=$(HOME)/.local
 BINDIR=$(PREFIX)/bin
 OBIN=gitc
 
