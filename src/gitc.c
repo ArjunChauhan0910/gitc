@@ -140,7 +140,7 @@ int repo_commit_menu(WINDOW *win)
     menu_items[commit_count] = (ITEM*)NULL;
     commit_summary_menu = new_menu((ITEM**)menu_items);
     set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
-    set_menu_spacing(commit_summary_menu,TABSIZE-1,1,0);
+    set_menu_spacing(commit_summary_menu,TABSIZE-4,1,0);
     post_menu(commit_summary_menu);
     wrefresh(win); 
     box(commit_diff_win,0,0);
