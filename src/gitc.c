@@ -108,8 +108,7 @@ int repo_commit_menu(WINDOW *win)
     ITEM **menu_items;
     ITEM *selected_item;
     WINDOW *commit_diff_win;
-    commit_diff_win = newwin(19,col,BOTTOM_MENU_OFFSET(row),0);
-    getmaxyx(commit_diff_win,sub_row,sub_col);
+    bool enter_keypressed = false;
     git_libgit2_init();
     git_repository *root_repo = NULL;
     git_revwalk *walker = NULL;
@@ -139,14 +138,14 @@ int repo_commit_menu(WINDOW *win)
     }
     menu_items[commit_count] = (ITEM*)NULL;
     commit_summary_menu = new_menu((ITEM**)menu_items);
-    set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
+    set_menu_format(commit_summary_menu,row,1);
     set_menu_spacing(commit_summary_menu,TABSIZE-4,1,0);
     post_menu(commit_summary_menu);
     wrefresh(win); 
-    box(commit_diff_win,0,0);
-    wrefresh(commit_diff_win);
-    wrefresh(win);
-    getmaxyx(commit_diff_win,sub_row,sub_col); 
+   // box(commit_diff_win,0,0);
+   // wrefresh(commit_diff_win);
+   // wrefresh(win);
+  //  getmaxyx(commit_diff_win,sub_row,sub_col); 
     while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
     {
         switch(keypress)
@@ -159,48 +158,56 @@ int repo_commit_menu(WINDOW *win)
             case KEY_UP:
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
+            case 10:
+                if ( ! commit_diff_win)
+                    commit_diff_win = newwin(row,col/2,col/2,0);
+                break;
+                
             case KEY_RESIZE:
                 getmaxyx(win,row,col);
                 selected_item = current_item(commit_summary_menu);
                 unpost_menu(commit_summary_menu);
                 wclear(win);
-                wresize(commit_diff_win,19,col);
-                mvwin(commit_diff_win,BOTTOM_MENU_OFFSET(row),0);
-                getmaxyx(commit_diff_win,sub_row,sub_col);
-                set_menu_format(commit_summary_menu,BOTTOM_MENU_OFFSET(row),1);
+                if ( commit_diff_win )
+                {   
+                    wresize(commit_diff_win,row,col/2);
+                    mvwin(commit_diff_win,0,col/2);
+                    getmaxyx(commit_diff_win,sub_row,sub_col);
+                }
+                set_menu_format(commit_summary_menu,row,1);
                 post_menu(commit_summary_menu);
                 set_current_item(commit_summary_menu,selected_item);
                 wrefresh(win);
-                wrefresh(commit_diff_win);
-                
+                wrefresh(commit_diff_win);    
                 break;
         }
-        selected_item = current_item(commit_summary_menu);
-        delwin(commit_diff_win);
-        commit_diff_win = newwin(19,col,BOTTOM_MENU_OFFSET(row),0);
-        box(commit_diff_win,0,0);
-        char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
-        git_oid_fromstr(&sel_oid,oid_str);
-        git_commit_lookup(&sel_commit,root_repo,&sel_oid);
-        git_commit_parent(&parent_commit,sel_commit,0);
-        git_commit_tree(&commit_tree,sel_commit);
-        git_commit_tree(&parent_tree,parent_commit);
-        git_diff_tree_to_tree(&diff,root_repo,parent_tree,commit_tree,NULL);
-        git_diff_get_stats(&stats,diff);
-        git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_FULL,80);
-        time = git_commit_time(sel_commit);
-        
-        mvwprintw(commit_diff_win,1,2,"Commit message : %s",item_name(selected_item));
-        mvwprintw(commit_diff_win,2,2,"Commit ID : %s",item_description(selected_item));
-        mvwprintw(commit_diff_win,3,2,"Author : %s",strdup(git_commit_author(sel_commit)->name));
-        mvwprintw(commit_diff_win,4,2,"Email : %s",strdup(git_commit_author(sel_commit)->email));
-        mvwprintw(commit_diff_win,5,2,"Time : %s",ctime(&time));
-        
-        mvwprintw(commit_diff_win,7,0,gbuf.ptr);
-        box(commit_diff_win,0,0);
-        git_buf_free(&gbuf);
-        git_diff_stats_free(stats);
-        wrefresh(commit_diff_win);
+        if ( commit_diff_win )
+        {
+            selected_item = current_item(commit_summary_menu);
+            delwin(commit_diff_win);
+            commit_diff_win = newwin(19,col,BOTTOM_MENU_OFFSET(row),0);
+            box(commit_diff_win,0,0);
+            char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
+            git_oid_fromstr(&sel_oid,oid_str);
+            git_commit_lookup(&sel_commit,root_repo,&sel_oid);
+            git_commit_parent(&parent_commit,sel_commit,0);
+            git_commit_tree(&commit_tree,sel_commit);
+            git_commit_tree(&parent_tree,parent_commit);
+            git_diff_tree_to_tree(&diff,root_repo,parent_tree,commit_tree,NULL);
+            git_diff_get_stats(&stats,diff);
+            git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_FULL,80);
+            time = git_commit_time(sel_commit);
+            mvwprintw(commit_diff_win,1,2,"Commit message : %s",item_name(selected_item));
+            mvwprintw(commit_diff_win,2,2,"Commit ID : %s",item_description(selected_item));
+            mvwprintw(commit_diff_win,3,2,"Author : %s",strdup(git_commit_author(sel_commit)->name));
+            mvwprintw(commit_diff_win,4,2,"Email : %s",strdup(git_commit_author(sel_commit)->email));
+            mvwprintw(commit_diff_win,5,2,"Time : %s",ctime(&time));
+            mvwprintw(commit_diff_win,7,0,gbuf.ptr);
+            box(commit_diff_win,0,0);
+            git_buf_free(&gbuf);
+            git_diff_stats_free(stats);
+            wrefresh(commit_diff_win);
+        }
 
     }
     unpost_menu(commit_summary_menu);
