@@ -11,6 +11,7 @@ gitc is a small ncurses-based viewing frontend for the Git version control syste
 
 #### For Debian-based distros
 ```
+build-essential
 libncurses5-dev
 libgit2-dev
 ```
