@@ -10,7 +10,8 @@ all:
 install:
 	install -Dm755 $(OBIN) $(BINDIR)/$(OBIN)
 	rm $(OBIN)
-
+clean:
+	rm $(OBIN)
 
 uninstall:
 	rm -f $(BINDIR)/$(OBIN)
