@@ -26,7 +26,6 @@ int main(int argc,char **argv)
     keypad(stdscr,TRUE);
     noecho();
 
-    int key = 0;
     if( print_welc_scr(stdscr) == 0 )
     {
         curs_set(1);
