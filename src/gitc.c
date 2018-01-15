@@ -136,23 +136,19 @@ int repo_commit_menu(WINDOW *win)
     set_menu_spacing(commit_summary_menu,TABSIZE-4,1,0);
     post_menu(commit_summary_menu);
     wrefresh(win); 
-   // box(commit_diff_win,0,0);
-   // wrefresh(commit_diff_win);
-   // wrefresh(win);
-  //  getmaxyx(commit_diff_win,sub_row,sub_col); 
     while ( (keypress = getch() ) != EXIT_KEY )
     {
         switch(keypress)
         {
             case VI_KEY_DOWN:
-            case KEY_DOWN:
+            case DOWN_KEY:
                 menu_driver(commit_summary_menu,REQ_DOWN_ITEM);
                 break;
             case VI_KEY_UP:
-            case KEY_UP:
+            case UP_KEY:
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
-            case 10:
+            case ENTER_KEY:
                 if (commit_diff_win == NULL)
                     commit_diff_win = newwin(row,col/2,0,col/2);
                 enter_keypressed = 1;
@@ -192,11 +188,11 @@ int repo_commit_menu(WINDOW *win)
             git_diff_get_stats(&stats,diff);
             git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_FULL,80);
             time = git_commit_time(sel_commit);
-            mvwprintw(commit_diff_win,1,2,"Commit message : %s",item_name(selected_item));
-            mvwprintw(commit_diff_win,2,2,"Commit ID : %s",item_description(selected_item));
-            mvwprintw(commit_diff_win,3,2,"Author : %s",strdup(git_commit_author(sel_commit)->name));
-            mvwprintw(commit_diff_win,4,2,"Email : %s",strdup(git_commit_author(sel_commit)->email));
-            mvwprintw(commit_diff_win,5,2,"Time : %s",ctime(&time));
+            mvwprintw(commit_diff_win,1,1,"Commit message : %s",item_name(selected_item));
+            mvwprintw(commit_diff_win,2,1,"Commit ID : %s",item_description(selected_item));
+            mvwprintw(commit_diff_win,3,1,"Author : %s",strdup(git_commit_author(sel_commit)->name));
+            mvwprintw(commit_diff_win,4,1,"Email : %s",strdup(git_commit_author(sel_commit)->email));
+            mvwprintw(commit_diff_win,5,1,"Time : %s",ctime(&time));
             mvwprintw(commit_diff_win,7,0,gbuf.ptr);
             box(commit_diff_win,0,0);
             git_buf_free(&gbuf);

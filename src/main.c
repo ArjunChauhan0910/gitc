@@ -4,8 +4,6 @@
  * Author:Aditya Visvanathan
  * Version : 1.0.0
  */
-#define EXIT_KEY_PRESS 113
-#define CLEAN_EXIT_MAIN 0
 
 
 #include "gitc.h"
@@ -13,14 +11,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <locale.h>
-#define EXIT_MAIN_INCOMPLETE 1
 int main(int argc,char **argv)
 {
     setlocale(LC_ALL,"C");
     if ( ! check_if_repo() )
     {
         printf("gitc : Fatal! Not a Git Repository!\n");
-        return EXIT_MAIN_INCOMPLETE;
+        return E_EXIT;
     }
 
     initscr();
@@ -35,7 +32,7 @@ int main(int argc,char **argv)
         curs_set(1);
         nocbreak();
         endwin();
-        return 1;
+        return E_EXIT;
     }
 
     repo_commit_menu(stdscr);    
@@ -43,5 +40,5 @@ int main(int argc,char **argv)
     nocbreak();
     endwin();
 
-    return CLEAN_EXIT_MAIN;
+    return E_SUCCESS;
 }
