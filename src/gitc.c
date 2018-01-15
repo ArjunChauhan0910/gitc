@@ -2,14 +2,7 @@
  * Author:Aditya Visvanathan
  * License:TBD
  */
-#define VER "Version"
-#define EXIT_KEYPRESS_CODE 113
-#define BOTTOM_WINDOW_OFFSET(a) (a - 19)
-#define VI_KEY_UP 107
-#define VI_KEY_DOWN 106
-#define BOTTOM_MENU_OFFSET(a) (a - 19)
 
-#include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -20,7 +13,7 @@
 int print_welc_scr(WINDOW* win)
 {
     if ( ! win )
-        return -1;
+        return E_EXIT;
     int row,col,keypress;
     static const char* title_msg_top = "gitc : Git-Curses";
     static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
@@ -32,7 +25,7 @@ int print_welc_scr(WINDOW* win)
     mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
-    while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
+    while ( (keypress = getch() ) != EXIT_KEY )
     {
         if ( keypress == KEY_RESIZE )
         {
@@ -46,20 +39,20 @@ int print_welc_scr(WINDOW* win)
             wrefresh(win);
         }
         else
-            return 1;
+            return E_EXIT;
     }
 
-    return 0;
+    return E_SUCCESS;
 }
 
 int wprint_text_mid(WINDOW *win,char *text)
 {
     if ( ! win )
-        return 1;
+        return E_EXIT;
     int row,col;
     getmaxyx(win,row,col);
     mvwprintw(win,row/2,(col-strlen(text))/2,"%s",text);
-    return 0;
+    return E_SUCCESS;
 }
 
 bool check_if_repo()
@@ -101,14 +94,15 @@ int repo_commit_menu(WINDOW *win)
 {
     if ( ! win )
         return -1;
-    int keypress,i = 0,lc = 0,row,col,sub_row,sub_col;
+    int i = 0,lc = 0,row,col,sub_row,sub_col;
+    keybind keypress;
     getmaxyx(win,row,col);
     int commit_count = get_commit_count();
     MENU *commit_summary_menu;
     ITEM **menu_items;
     ITEM *selected_item;
     WINDOW *commit_diff_win;
-    bool enter_keypressed = false;
+    bool enter_keypressed = 0;
     git_libgit2_init();
     git_repository *root_repo = NULL;
     git_revwalk *walker = NULL;
@@ -146,7 +140,7 @@ int repo_commit_menu(WINDOW *win)
    // wrefresh(commit_diff_win);
    // wrefresh(win);
   //  getmaxyx(commit_diff_win,sub_row,sub_col); 
-    while ( (keypress = getch() ) != EXIT_KEYPRESS_CODE )
+    while ( (keypress = getch() ) != EXIT_KEY )
     {
         switch(keypress)
         {
@@ -159,8 +153,9 @@ int repo_commit_menu(WINDOW *win)
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
             case 10:
-                if ( ! commit_diff_win)
+                if (commit_diff_win == NULL)
                     commit_diff_win = newwin(row,col/2,0,col/2);
+                enter_keypressed = 1;
                 break;
                 
             case KEY_RESIZE:
@@ -168,7 +163,7 @@ int repo_commit_menu(WINDOW *win)
                 selected_item = current_item(commit_summary_menu);
                 unpost_menu(commit_summary_menu);
                 wclear(win);
-                if ( commit_diff_win )
+                if ( enter_keypressed )
                 {   
                     wresize(commit_diff_win,row,col/2);
                     mvwin(commit_diff_win,0,col/2);
@@ -181,7 +176,7 @@ int repo_commit_menu(WINDOW *win)
                 wrefresh(win);
                 break;
         }
-        if ( commit_diff_win )
+        if ( commit_diff_win != NULL )
         {
             selected_item = current_item(commit_summary_menu);
             delwin(commit_diff_win);
@@ -207,7 +202,9 @@ int repo_commit_menu(WINDOW *win)
             git_buf_free(&gbuf);
             git_diff_stats_free(stats);
             wrefresh(commit_diff_win);
+            
         }
+        wrefresh(win);
 
     }
     unpost_menu(commit_summary_menu);
@@ -220,7 +217,7 @@ int repo_commit_menu(WINDOW *win)
     git_commit_free(sel_commit);
     git_repository_free(root_repo);
     git_libgit2_shutdown();
-    return 0;
+    return E_SUCCESS;
                 
 }
 
