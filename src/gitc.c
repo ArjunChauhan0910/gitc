@@ -160,7 +160,7 @@ int repo_commit_menu(WINDOW *win)
                 break;
             case 10:
                 if ( ! commit_diff_win)
-                    commit_diff_win = newwin(row,col/2,col/2,0);
+                    commit_diff_win = newwin(row,col/2,0,col/2);
                 break;
                 
             case KEY_RESIZE:
@@ -173,19 +173,19 @@ int repo_commit_menu(WINDOW *win)
                     wresize(commit_diff_win,row,col/2);
                     mvwin(commit_diff_win,0,col/2);
                     getmaxyx(commit_diff_win,sub_row,sub_col);
+                    wrefresh(commit_diff_win);
                 }
                 set_menu_format(commit_summary_menu,row,1);
                 post_menu(commit_summary_menu);
                 set_current_item(commit_summary_menu,selected_item);
                 wrefresh(win);
-                wrefresh(commit_diff_win);    
                 break;
         }
         if ( commit_diff_win )
         {
             selected_item = current_item(commit_summary_menu);
             delwin(commit_diff_win);
-            commit_diff_win = newwin(19,col,BOTTOM_MENU_OFFSET(row),0);
+            commit_diff_win = newwin(row,col/2,col/2,0);
             box(commit_diff_win,0,0);
             char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
             git_oid_fromstr(&sel_oid,oid_str);
