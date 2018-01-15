@@ -1,4 +1,4 @@
-CFLAGS=-Wall
+CFLAGS=-Wall 
 LDFLAGS=-lncurses -lmenu -lgit2
 PREFIX=$(HOME)/.local
 BINDIR=$(PREFIX)/bin
