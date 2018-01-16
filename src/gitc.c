@@ -101,7 +101,7 @@ int repo_commit_menu(WINDOW *win)
     MENU *commit_summary_menu;
     ITEM **menu_items;
     ITEM *selected_item;
-    WINDOW *commit_diff_win;
+    WINDOW *commit_diff_win = NULL;
     bool enter_keypressed = 0;
     git_libgit2_init();
     git_repository *root_repo = NULL;
@@ -149,9 +149,11 @@ int repo_commit_menu(WINDOW *win)
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
             case ENTER_KEY:
-                if (commit_diff_win == NULL)
+                if ( enter_keypressed == 0 )
+                {
                     commit_diff_win = newwin(row,col/2,0,col/2);
-                enter_keypressed = 1;
+                    enter_keypressed = 1;
+                }
                 break;
                 
             case KEY_RESIZE:
@@ -159,7 +161,7 @@ int repo_commit_menu(WINDOW *win)
                 selected_item = current_item(commit_summary_menu);
                 unpost_menu(commit_summary_menu);
                 wclear(win);
-                if ( enter_keypressed )
+                if ( enter_keypressed == 1 )
                 {   
                     wresize(commit_diff_win,row,col/2);
                     mvwin(commit_diff_win,0,col/2);
@@ -171,11 +173,16 @@ int repo_commit_menu(WINDOW *win)
                 set_current_item(commit_summary_menu,selected_item);
                 wrefresh(win);
                 break;
+            default:
+                /* do nothing */
+                break;
+
         }
-        if ( commit_diff_win != NULL )
+        if ( enter_keypressed  == 1)
         {
             selected_item = current_item(commit_summary_menu);
-            delwin(commit_diff_win);
+            if( commit_diff_win != NULL ) 
+                delwin(commit_diff_win);
             commit_diff_win = newwin(row,col/2,0,col/2);
             box(commit_diff_win,0,0);
             char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
