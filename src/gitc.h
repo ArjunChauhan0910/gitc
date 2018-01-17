@@ -10,7 +10,9 @@
 #include <menu.h>
 #include <stdlib.h>
 
-typedef enum _KEYBIND { RES_KEY = KEY_RESIZE,UP_KEY = KEY_UP,DOWN_KEY = KEY_DOWN,ENTER_KEY = 10,VI_KEY_UP = 107,VI_KEY_DOWN = 106,EXIT_KEY = 113 } keybind;
+typedef enum _KEYBIND 
+{ RES_KEY = KEY_RESIZE,UP_KEY = KEY_UP,DOWN_KEY = KEY_DOWN,ENTER_KEY = 10,VI_KEY_UP = 107,VI_KEY_DOWN = 106,EXIT_KEY = 113 } 
+keybind;
 typedef enum _ERR_CODE { E_SUCCESS,E_EXIT } err_code;
 
 
