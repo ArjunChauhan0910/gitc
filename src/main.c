@@ -16,6 +16,7 @@
 #define EXIT_MAIN_INCOMPLETE 1
 int main(int argc,char **argv)
 {
+    WINDOW *main_win;
     setlocale(LC_ALL,"C");
     if ( ! check_if_repo() )
     {
@@ -23,14 +24,14 @@ int main(int argc,char **argv)
         return EXIT_MAIN_INCOMPLETE;
     }
 
-    initscr();
+    main_win = initscr();
     curs_set(0);
     cbreak();
-    keypad(stdscr,TRUE);
+    keypad(main_win,TRUE);
     noecho();
 
     int key = 0;
-    if( print_welc_scr(stdscr) == 0 )
+    if( print_welc_scr(main_win) == 0 )
     {
         curs_set(1);
         nocbreak();
@@ -38,7 +39,7 @@ int main(int argc,char **argv)
         return 1;
     }
 
-    repo_commit_menu(stdscr);    
+    repo_commit_menu(main_win);    
     curs_set(1); 
     nocbreak();
     endwin();
