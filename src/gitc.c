@@ -10,41 +10,62 @@
 #include <menu.h>
 #include "gitc.h"
 
+
+/* body for welcome screen printing */
 int print_welc_scr(WINDOW* win)
 {
+    
+    /* check if curses window exists */
     if ( ! win )
         return E_EXIT;
+
+
     int row,col,keypress;
+
+    /* char* const to display messages */
     static const char* title_msg_top = "gitc : Git-Curses";
     static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
     static const char* fol_msg = "Press any key to continue..";
     static const char* exit_msg = "Press Q to quit";
+
+    /* grab window details */
     getmaxyx(win,row,col);
+
+    /* print necessary details for welcome screen */
     mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
     mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
     mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
     mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
     wrefresh(win);
+
+    /* grab key press as long as gitc is running */
     while ( (keypress = getch() ) != EXIT_KEY )
     {
+        /* handle window resizing */                                        /* write a portable sigwinch handler */
         if ( keypress == KEY_RESIZE )
         {
 
+            
+            /* clear window and reprint all intro messages */               /* make this more resuable */
             wclear(win);
             getmaxyx(win,row,col);
             mvwprintw(win,1,(col-strlen(title_msg_top))/2,"%s",title_msg_top);
             mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
             mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
             mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
+            
+            /* refresh all changes to win */
             wrefresh(win);
         }
         else
-            return E_EXIT;
+            return E_SUCCESS;
     }
 
-    return E_SUCCESS;
+    return E_EXIT;
 }
 
+
+/* print a char* text in centre of a window */
 int wprint_text_mid(WINDOW *win,char *text)
 {
     if ( ! win )
@@ -55,6 +76,7 @@ int wprint_text_mid(WINDOW *win,char *text)
     return E_SUCCESS;
 }
 
+/* check if libgit2 is able to open a git repo in cwd */
 bool check_if_repo()
 {
     git_libgit2_init();
@@ -65,6 +87,8 @@ bool check_if_repo()
     git_libgit2_shutdown();
     return error == 0;
 }
+
+/* get commit_count of a repo in cwd,-1 if no repo found */
 int get_commit_count()
 {
 	int count = 0;
@@ -72,6 +96,8 @@ int get_commit_count()
 	git_repository *repo = NULL;
 	git_revwalk *walker = NULL;
 	int open_error = git_repository_open_ext(&repo,".",0,NULL);
+    if ( open_error != 0 )
+        return E_EXIT;
     git_revwalk_new(&walker,repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
@@ -82,18 +108,11 @@ int get_commit_count()
     git_libgit2_shutdown();
 	return count;
 }
-
-char *get_committer_name_from_oid(git_oid oid,git_repository *repo)
-{
-    git_commit *commit = NULL;
-    git_commit_lookup(&commit,repo,&oid);
-    return strdup(git_commit_committer(commit)->name);
-}
-
+/* print commit_menu and diff details for each window */            /* make this smaller possibly and less monolithic */
 int repo_commit_menu(WINDOW *win)
 {
     if ( ! win )
-        return -1;
+        return E_EXIT;
     int i = 0,lc = 0,row,col,sub_row,sub_col;
     keybind keypress;
     getmaxyx(win,row,col);
@@ -110,7 +129,7 @@ int repo_commit_menu(WINDOW *win)
     git_tree *commit_tree = NULL,*parent_tree = NULL;
     git_diff *diff = NULL;
     git_buf gbuf = GIT_BUF_INIT_CONST(NULL,0);
-    int open_error = git_repository_open_ext(&root_repo,".",0,NULL);
+    git_repository_open_ext(&root_repo,".",0,NULL);
     git_revwalk_new(&walker,root_repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);

@@ -27,7 +27,7 @@ int main(int argc,char **argv)
     keypad(main_win,TRUE);
     noecho();
 
-    if( print_welc_scr(main_win) == 0 )
+    if( print_welc_scr(main_win) == E_EXIT )
     {
         curs_set(1);
         nocbreak();
