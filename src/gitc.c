@@ -17,7 +17,7 @@ int print_welc_scr(WINDOW* win)
     
     /* check if curses window exists */
     if ( ! win )
-        return E_EXIT;
+        return E_WIN_ERR;
 
 
     int row,col,keypress;
@@ -69,7 +69,7 @@ int print_welc_scr(WINDOW* win)
 int wprint_text_mid(WINDOW *win,char *text)
 {
     if ( ! win )
-        return E_EXIT;
+        return E_WIN_ERR;
     int row,col;
     getmaxyx(win,row,col);
     mvwprintw(win,row/2,(col-strlen(text))/2,"%s",text);
@@ -97,7 +97,7 @@ int get_commit_count()
 	git_revwalk *walker = NULL;
 	int open_error = git_repository_open_ext(&repo,".",0,NULL);
     if ( open_error != 0 )
-        return E_EXIT;
+        return E_REPO_ERR;
     git_revwalk_new(&walker,repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
@@ -112,7 +112,7 @@ int get_commit_count()
 int repo_commit_menu(WINDOW *win)
 {
     if ( ! win )
-        return E_EXIT;
+        return E_WIN_ERR;
     int i = 0,lc = 0,row,col,sub_row,sub_col;
     keybind keypress;
     getmaxyx(win,row,col);

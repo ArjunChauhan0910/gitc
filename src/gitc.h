@@ -19,7 +19,10 @@ typedef enum _KEYBIND
 keybind;
 
 /* enumeration for exit return codes througout gitc */
-typedef enum _ERR_CODE { E_SUCCESS,E_EXIT } err_code;
+typedef enum _ERR_CODE { E_REPO_ERR = -2,
+    E_WIN_ERR = -1,
+    E_SUCCESS = 0,
+    E_EXIT = 1 } err_code;
 
 
 /* print welcome screen message window */
