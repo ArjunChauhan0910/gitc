@@ -111,10 +111,15 @@ int get_commit_count()
 /* print commit_menu and diff details for each window */            /* make this smaller possibly and less monolithic */
 int repo_commit_menu(WINDOW *win)
 {
+    /* check valid window */
     if ( ! win )
-        return E_WIN_ERR;
+           return E_WIN_ERR;
+
+    /* variables for looping repo and storing window dimensions */
     int i = 0,lc = 0,row,col,sub_row,sub_col;
     keybind keypress;
+    
+    /* get window dimensions and repo commit count */
     getmaxyx(win,row,col);
     int commit_count = get_commit_count();
     MENU *commit_summary_menu;
@@ -129,44 +134,80 @@ int repo_commit_menu(WINDOW *win)
     git_tree *commit_tree = NULL,*parent_tree = NULL;
     git_diff *diff = NULL;
     git_buf gbuf = GIT_BUF_INIT_CONST(NULL,0);
-    git_repository_open_ext(&root_repo,".",0,NULL);
+
+    /* open git repository */
+    int open_err = git_repository_open_ext(&root_repo,".",0,NULL);
+    if (  open_err != 0 )
+        return E_REPO_ERR;
+
+    /* initialize git_revwalk to traverse through commit history */
     git_revwalk_new(&walker,root_repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
     git_oid commit_id,sel_oid;
+
+    /* commit,stats and time placeholder variables */
     git_commit *sel_commit = NULL;
     git_diff_stats *stats = NULL;
     time_t time;
+
+    /* clear window */
     wclear(win);
+
+    /* allocate n memory locations for menu items */
     menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
+
+    /* commit traversal and insert into menu */
     while(!  git_revwalk_next(&commit_id,walker) )
     {
         git_commit *commit_obj = NULL;
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
+
+        /* get commit summaryand commit id in char* */
         char* commit_summary_str = strdup(git_commit_summary(commit_obj));
         char* commit_id_str = strdup(git_oid_tostr_s(&commit_id));
+
+        /* insert commit summary and commit id into menu */
         menu_items[lc] = new_item(commit_summary_str,commit_id_str);
         lc++;
         git_commit_free(commit_obj);
     }
+
+    /* truncate last position of menu_items array  */
     menu_items[commit_count] = (ITEM*)NULL;
+
+    /* create new menu based on items array */
     commit_summary_menu = new_menu((ITEM**)menu_items);
+    
+    /* set menu spacing and menu size */
     set_menu_format(commit_summary_menu,row,1);
     set_menu_spacing(commit_summary_menu,TABSIZE-4,1,0);
+
+
+    /* print menu on screen with given dimensions */
     post_menu(commit_summary_menu);
     wrefresh(win); 
+
+
+    /* menu key press, exit if user presses q */
     while ( (keypress = getch() ) != EXIT_KEY )
     {
         switch(keypress)
         {
+            
+            /* UP arrow press or VI up press */
             case VI_KEY_DOWN:
             case DOWN_KEY:
                 menu_driver(commit_summary_menu,REQ_DOWN_ITEM);
                 break;
+
+            /* down arrow press or VI down press */
             case VI_KEY_UP:
             case UP_KEY:
                 menu_driver(commit_summary_menu,REQ_UP_ITEM);
                 break;
+
+            /* enter key press to select commit */
             case ENTER_KEY:
                 if ( enter_keypressed == 0 )
                 {
@@ -174,12 +215,20 @@ int repo_commit_menu(WINDOW *win)
                     enter_keypressed = 1;
                 }
                 break;
-                
+            
+            /* resize key press to handle window resizing */    
             case KEY_RESIZE:
+                /* get new dimensions of window after resizing */
                 getmaxyx(win,row,col);
+
+                /* store currently selected item */
                 selected_item = current_item(commit_summary_menu);
+
+                /* clear menu from screen and clear the screen */
                 unpost_menu(commit_summary_menu);
                 wclear(win);
+
+                /* resize commit subwindow as well if present */
                 if ( enter_keypressed == 1 )
                 {   
                     wresize(commit_diff_win,row,col/2);
@@ -187,16 +236,22 @@ int repo_commit_menu(WINDOW *win)
                     getmaxyx(commit_diff_win,sub_row,sub_col);
                     wrefresh(commit_diff_win);
                 }
+
+                /* reset menu format (rows,columns) and print menu to screen */
                 set_menu_format(commit_summary_menu,row,1);
                 post_menu(commit_summary_menu);
+
+                /* set previous current item */
                 set_current_item(commit_summary_menu,selected_item);
                 wrefresh(win);
                 break;
+            /* do nothing if anything else pressed */
             default:
                 /* do nothing */
                 break;
 
         }
+        /* print commit stats if commit is selected in menu */
         if ( enter_keypressed  == 1)
         {
             selected_item = current_item(commit_summary_menu);
