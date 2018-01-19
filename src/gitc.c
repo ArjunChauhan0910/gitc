@@ -117,7 +117,7 @@ int repo_commit_menu(WINDOW *win)
 
     /* variables for looping repo and storing window dimensions */
     int i = 0,lc = 0,row,col,sub_row,sub_col;
-    keybind keypress;
+    int keypress;
     
     /* get window dimensions and repo commit count */
     getmaxyx(win,row,col);
