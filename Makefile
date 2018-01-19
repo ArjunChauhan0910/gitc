@@ -4,7 +4,7 @@ BINDIR=$(PREFIX)/bin
 OBIN=gitc
 
 all:
-	$(CC)  src/gitc.c src/main.c $(LDFLAGS) -o $(OBIN)
+	$(CC) src/gitc.c src/main.c $(LDFLAGS) -o $(OBIN)
 
 install:
 	install -Dm755 $(OBIN) $(BINDIR)/$(OBIN)
