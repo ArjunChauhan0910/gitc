@@ -1,7 +1,7 @@
 CFLAGS=-Wall 
 LDFLAGS=-lncurses -lmenu -lgit2
 PREFIX=$(HOME)/.local
-INDIR=$(PREFIX)/bin
+BINDIR=$(PREFIX)/bin
 OBIN=gitc
 
 all:
