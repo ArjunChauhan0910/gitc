@@ -92,18 +92,30 @@ bool check_if_repo()
 int get_commit_count()
 {
 	int count = 0;
-	git_libgit2_init();
+	
+    /* initialize libgit2 */
+    git_libgit2_init();
 	git_repository *repo = NULL;
 	git_revwalk *walker = NULL;
+
+    /* open repository */
 	int open_error = git_repository_open_ext(&repo,".",0,NULL);
+    
+    /* throw error if repo open does not succeed */
     if ( open_error != 0 )
         return E_REPO_ERR;
+
+    /* set up git revwalk to traverse commits */
     git_revwalk_new(&walker,repo);
     git_revwalk_sorting(walker,GIT_SORT_NONE);
     git_revwalk_push_head(walker);
     git_oid commit_id;
+
+    /* parse commit history */
 	while(!  git_revwalk_next(&commit_id,walker) )
 	    count++;
+
+    /* deinitialize libgit2 stuff */
     git_repository_free(repo);
     git_libgit2_shutdown();
 	return count;
@@ -122,12 +134,17 @@ int repo_commit_menu(WINDOW *win)
     /* get window dimensions and repo commit count */
     getmaxyx(win,row,col);
     int commit_count = get_commit_count();
+
+    /* initialize menu */
     MENU *commit_summary_menu;
     ITEM **menu_items;
     ITEM *selected_item;
     WINDOW *commit_diff_win = NULL;
+
+    /* initialize libgit2 stuff */
     bool enter_keypressed = 0;
     git_libgit2_init();
+
     git_repository *root_repo = NULL;
     git_revwalk *walker = NULL;
     git_commit *parent_commit = NULL;
@@ -155,7 +172,7 @@ int repo_commit_menu(WINDOW *win)
     wclear(win);
 
     /* allocate n memory locations for menu items */
-    menu_items = (ITEM**)calloc(commit_count+1,sizeof(ITEM*));
+    menu_items = (ITEM**) calloc (commit_count + 1,sizeof (ITEM*));
 
     /* commit traversal and insert into menu */
     while(!  git_revwalk_next(&commit_id,walker) )
@@ -192,26 +209,27 @@ int repo_commit_menu(WINDOW *win)
     /* menu key press, exit if user presses q */
     while ( (keypress = getch() ) != EXIT_KEY )
     {
-        switch(keypress)
+        switch (keypress)
         {
             
             /* UP arrow press or VI up press */
             case VI_KEY_DOWN:
             case DOWN_KEY:
-                menu_driver(commit_summary_menu,REQ_DOWN_ITEM);
+                menu_driver (commit_summary_menu,REQ_DOWN_ITEM);
                 break;
 
-            /* down arrow press or VI down press */
+            /* DOWN arrow press or VI down press */
             case VI_KEY_UP:
             case UP_KEY:
-                menu_driver(commit_summary_menu,REQ_UP_ITEM);
+                menu_driver (commit_summary_menu,REQ_UP_ITEM);
                 break;
 
             /* enter key press to select commit */
             case ENTER_KEY:
                 if ( enter_keypressed == 0 )
                 {
-                    commit_diff_win = newwin(row,col/2,0,col/2);
+                    if ( commit_diff_win  == NULL ) 
+                        commit_diff_win = newwin (row,col/2,col/2,0);
                     enter_keypressed = 1;
                 }
                 break;
@@ -219,14 +237,14 @@ int repo_commit_menu(WINDOW *win)
             /* resize key press to handle window resizing */    
             case KEY_RESIZE:
                 /* get new dimensions of window after resizing */
-                getmaxyx(win,row,col);
+                getmaxyx (win,row,col);
 
                 /* store currently selected item */
-                selected_item = current_item(commit_summary_menu);
+                selected_item = current_item (commit_summary_menu);
 
                 /* clear menu from screen and clear the screen */
-                unpost_menu(commit_summary_menu);
-                wclear(win);
+                unpost_menu (commit_summary_menu);
+                wclear (win);
 
                 /* resize commit subwindow as well if present */
                 if ( enter_keypressed == 1 )
@@ -259,23 +277,35 @@ int repo_commit_menu(WINDOW *win)
                 delwin(commit_diff_win);
             commit_diff_win = newwin(row,col/2,0,col/2);
             box(commit_diff_win,0,0);
-            char *oid_str = strdup(item_description(current_item(commit_summary_menu)));
+            
+            /* get commit id from selected item in menu */
+            const char  *oid_str = item_description(current_item(commit_summary_menu));
             git_oid_fromstr(&sel_oid,oid_str);
+
+            /* use selected item to look up current commit,parent commit and tree */
             git_commit_lookup(&sel_commit,root_repo,&sel_oid);
             git_commit_parent(&parent_commit,sel_commit,0);
             git_commit_tree(&commit_tree,sel_commit);
             git_commit_tree(&parent_tree,parent_commit);
+
+            /* get diff between working commit and parent commit */
             git_diff_tree_to_tree(&diff,root_repo,parent_tree,commit_tree,NULL);
             git_diff_get_stats(&stats,diff);
+
+            /* set stats format and store in buffer */
             git_diff_stats_to_buf(&gbuf,stats,GIT_DIFF_STATS_FULL,80);
             time = git_commit_time(sel_commit);
+
+            /* print commit diff stats  and other info */
             mvwprintw(commit_diff_win,1,1,"Commit message : %s",item_name(selected_item));
             mvwprintw(commit_diff_win,2,1,"Commit ID : %s",item_description(selected_item));
-            mvwprintw(commit_diff_win,3,1,"Author : %s",strdup(git_commit_author(sel_commit)->name));
-            mvwprintw(commit_diff_win,4,1,"Email : %s",strdup(git_commit_author(sel_commit)->email));
+            mvwprintw(commit_diff_win,3,1,"Author : %s",git_commit_author(sel_commit)->name);
+            mvwprintw(commit_diff_win,4,1,"Email : %s",git_commit_author(sel_commit)->email);
             mvwprintw(commit_diff_win,5,1,"Time : %s",ctime(&time));
-            mvwprintw(commit_diff_win,7,0,gbuf.ptr);
+            mvwprintw(commit_diff_win,7,0,"%s",gbuf.ptr);
             box(commit_diff_win,0,0);
+
+            /* git diff cleanup */
             git_buf_free(&gbuf);
             git_diff_stats_free(stats);
             wrefresh(commit_diff_win);
@@ -284,13 +314,18 @@ int repo_commit_menu(WINDOW *win)
         wrefresh(win);
 
     }
+
+    /* menu items cleanup */
     unpost_menu(commit_summary_menu);
-    for(i = 0;i < commit_count;i++)
-        free_item(menu_items[i]);
+    for (i = 0; i < commit_count; i++ )
+        free_item ( menu_items[i] );
     
-    free_menu(commit_summary_menu);
+    /* menu cleanup */
+    free_menu( commit_summary_menu );
     wrefresh(win);
     delwin(commit_diff_win);
+
+    /* libgit2 cleanup */
     git_commit_free(sel_commit);
     git_repository_free(root_repo);
     git_libgit2_shutdown();
