@@ -20,7 +20,7 @@ int main(int argc,char **argv)
     /* check if repo exists */
     if ( ! check_if_repo() )
     {
-        printf("gitc : Fatal! Not a Git Repository!\n");
+        fprintf(stdout,"gitc : Fatal! Not a Git Repository!\n");
         return E_EXIT;
     }
     
