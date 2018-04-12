@@ -10,6 +10,10 @@
 #include <menu.h>
 #include "gitc.h"
 
+void print_gitc_ver()
+{
+    fprintf(stdout,"\ngitc version:unreleased testing channel");
+}
 
 /* body for welcome screen printing */
 int print_welc_scr(WINDOW* win)

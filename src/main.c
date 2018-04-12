@@ -13,10 +13,14 @@
 #include <locale.h>
 int main(int argc,char **argv)
 {
+    
     WINDOW *main_win;
     /* set locale to C to speed up performance */
     setlocale(LC_ALL,"C");
 
+    
+
+    
     /* check if repo exists */
     if ( ! check_if_repo() )
     {

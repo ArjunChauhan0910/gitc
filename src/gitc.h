@@ -41,5 +41,6 @@ int get_commit_count();
 
 int wprint_text_mid(WINDOW*,char*);
 
+void print_gitc_ver();
 /* end include guards*/
 #endif
