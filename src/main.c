@@ -5,11 +5,9 @@
  * Version : 1.0.0
  */
 
-
+#ifndef _GITC_H_
 #include "gitc.h"
-#include <ncurses.h>
-#include <string.h>
-#include <unistd.h>
+#endif
 #include <locale.h>
 int main(int argc,char **argv)
 {
