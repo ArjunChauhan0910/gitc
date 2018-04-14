@@ -23,7 +23,7 @@ char *const_to_str(const char* cstr)
 }
 void print_gitc_ver()
 {
-    fprintf(stdout,"\ngitc version:unreleased testing channel");
+    fprintf(stdout,"gitc version:unreleased testing channel\n");
 }
 
 /* body for welcome screen printing */
