@@ -9,10 +9,17 @@
 #endif
 char *const_to_str(const char* cstr)
 {
-    int len = strlen(cstr);
-    char *str = calloc(len+1,sizeof(*cstr));
-    strcpy(str,cstr);
-    return str;
+    if ( cstr )
+    {
+        char *str = calloc(strlen(cstr)+1,sizeof(*cstr));
+        if ( str )
+            fprintf(stdout,"calloc() failed!!");
+
+        strcpy(str,cstr);
+        return str;
+    }
+    else
+        return NULL;
 }
 void print_gitc_ver()
 {
