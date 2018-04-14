@@ -12,7 +12,7 @@ char *const_to_str(const char* cstr)
     if ( cstr )
     {
         char *str = calloc(strlen(cstr)+1,sizeof(*cstr));
-        if ( str )
+        if ( ! str )
             fprintf(stdout,"calloc() failed!!");
 
         strcpy(str,cstr);
