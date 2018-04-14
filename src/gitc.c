@@ -28,7 +28,7 @@ int print_welc_scr(WINDOW* win)
 
     /* char* const to display messages */
     static const char* title_msg_top = "gitc : Git-Curses";
-    static const char* des_msg_centre = "A TUI frontend for the Git Version Control System";
+    static const char* des_msg_centre = "A pager for the Git Version Control System";
     static const char* fol_msg = "Press any key to continue..";
     static const char* exit_msg = "Press Q to quit";
 
