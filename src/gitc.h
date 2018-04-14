@@ -15,7 +15,14 @@
 
 /* enumeration for key press codes in curses mode */
 typedef enum _KEYBIND 
-{ RES_KEY = KEY_RESIZE,UP_KEY = KEY_UP,DOWN_KEY = KEY_DOWN,ENTER_KEY = 10,VI_KEY_UP = 107,VI_KEY_DOWN = 106,EXIT_KEY = 113 } 
+{ 
+    RES_KEY = KEY_RESIZE,
+    UP_KEY = KEY_UP,
+    DOWN_KEY = KEY_DOWN,
+    ENTER_KEY = 10,
+    VI_KEY_UP = 107,
+    VI_KEY_DOWN = 106,
+    EXIT_KEY = 113 } 
 keybind;
 
 /* enumeration for exit return codes througout gitc */
@@ -42,5 +49,7 @@ int get_commit_count();
 int wprint_text_mid(WINDOW*,char*);
 
 void print_gitc_ver();
+
+char *const_to_str(const char*);
 /* end include guards*/
 #endif

@@ -3,13 +3,17 @@
  * License:TBD
  */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <git2.h>
-#include <menu.h>
-#include "gitc.h"
 
+#ifndef _GITC_H_
+#include "gitc.h"
+#endif
+char *const_to_str(const char* cstr)
+{
+    int len = strlen(cstr);
+    char *str = calloc(len+1,sizeof(*cstr));
+    strcpy(str,cstr);
+    return str;
+}
 void print_gitc_ver()
 {
     fprintf(stdout,"\ngitc version:unreleased testing channel");
@@ -80,7 +84,7 @@ int wprint_text_mid(WINDOW *win,char *text)
     return E_SUCCESS;
 }
 
-/* check if libgit2 is able to open a git repo in cwd */
+/* check if libgit2 is able to open a git repo in current working directory */
 bool check_if_repo()
 {
     git_libgit2_init();
@@ -89,7 +93,7 @@ bool check_if_repo()
     error = git_repository_open_ext(&cur_repo,".",0,NULL);
     git_repository_free(cur_repo);
     git_libgit2_shutdown();
-    return error == 0;
+    return (error == 0);
 }
 
 /* get commit_count of a repo in cwd,-1 if no repo found */
@@ -134,7 +138,7 @@ int repo_commit_menu(WINDOW *win)
     /* variables for looping repo and storing window dimensions */
     int i = 0,lc = 0,row,col,sub_row,sub_col;
     int keypress;
-    
+
     /* get window dimensions and repo commit count */
     getmaxyx(win,row,col);
     int commit_count = get_commit_count();
@@ -185,8 +189,8 @@ int repo_commit_menu(WINDOW *win)
         git_commit_lookup(&commit_obj,root_repo,&commit_id);
 
         /* get commit summaryand commit id in char* */
-        char* commit_summary_str = strdup(git_commit_summary(commit_obj));
-        char* commit_id_str = strdup(git_oid_tostr_s(&commit_id));
+        char* commit_summary_str = const_to_str(git_commit_summary(commit_obj));
+        char* commit_id_str = const_to_str(git_oid_tostr_s(&commit_id));
 
         /* insert commit summary and commit id into menu */
         menu_items[lc] = new_item(commit_summary_str,commit_id_str);
