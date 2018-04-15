@@ -7,13 +7,15 @@
 #ifndef _GITC_H_
 #include "gitc.h"
 #endif
+#define SRC "gitc.c"
+
 char *const_to_str(const char* cstr)
 {
     if ( cstr )
     {
         char *str = calloc(strlen(cstr)+1,sizeof(*cstr));
         if ( ! str )
-            fprintf(stdout,"calloc() failed!!");
+            fprintf(stdout,"%s: const_to_str() failed!",SRC);
 
         strcpy(str,cstr);
         return str;

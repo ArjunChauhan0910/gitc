@@ -1,4 +1,4 @@
-CFLAGS=-Wall -pedantic 
+CFLAGS=-Wall -pedantic -ofast
 LDFLAGS=-lncurses -lmenu -lgit2
 PREFIX=$(HOME)/.local
 BINDIR=$(PREFIX)/bin
@@ -17,5 +17,3 @@ clean:
 
 uninstall:
 	rm -f $(BINDIR)/$(OBIN)
-
-
