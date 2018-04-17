@@ -9,6 +9,8 @@
 #include "gitc.h"
 #endif
 #include <locale.h>
+#include <stdlib.h>
+#define LEN 27
 int main(int argc,char **argv)
 {
     
@@ -26,7 +28,10 @@ int main(int argc,char **argv)
         /* check if repo exists */
         if ( ! check_if_repo() )
         {
-            fprintf(stdout,"gitc : Fatal! Not a Git Repository!\n");
+            char errmsg[LEN] = "gitc: Not a git repository\n";
+            char *buf = malloc(LEN);
+            memcpy(buf,errmsg,LEN);
+            write(1,buf,LEN);
             return E_EXIT;
         }
     
