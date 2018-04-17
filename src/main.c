@@ -2,7 +2,7 @@
  * A TUI frontend for the Git VCS
  * License:TBD
  * Author:Aditya Visvanathan
- * Version : 1.0.0
+ * Version : Testing, Codename : maloha
  */
 
 #ifndef _GITC_H_
