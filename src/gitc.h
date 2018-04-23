@@ -11,7 +11,9 @@
 #include <string.h>
 #include <menu.h>
 #include <stdlib.h>
+#include <unistd.h>
 
+#define VERMSGLEN 14
 
 /* enumeration for key press codes in curses mode */
 typedef enum _KEYBIND 

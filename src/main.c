@@ -9,7 +9,6 @@
 #include "gitc.h"
 #endif
 #include <locale.h>
-#include <stdlib.h>
 #define LEN 27
 int main(int argc,char **argv)
 {

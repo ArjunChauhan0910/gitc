@@ -25,7 +25,8 @@ char *const_to_str(const char* cstr)
 }
 void print_gitc_ver()
 {
-    fprintf(stdout,"gitc version:unreleased testing channel\n");
+    char vermsg[VERMSGLEN] = "Testing: Unreleased";
+
 }
 
 /* body for welcome screen printing */
@@ -349,5 +350,3 @@ int repo_commit_menu(WINDOW *win)
     return E_SUCCESS;
                 
 }
-
-
