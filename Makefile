@@ -1,6 +1,6 @@
 CFLAGS=-Wall -pedantic -ofast
 LDFLAGS=-lncurses -lmenu -lgit2
-PREFIX=$(HOME)/.local
+PREFIX=/usr/local
 BINDIR=$(PREFIX)/bin
 OBIN=gitc
 CC=c99
@@ -10,6 +10,7 @@ all:
 
 install:
 	install -Dm755 $(OBIN) $(BINDIR)/$(OBIN)
+	install -D gitc-completion.bash /usr/share/bash-completion/completions/gitc
 	rm $(OBIN)
 
 clean:
@@ -17,3 +18,4 @@ clean:
 
 uninstall:
 	rm -f $(BINDIR)/$(OBIN)
+	rm -f /usr/share/bash-completion/completions/gitc
