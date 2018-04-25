@@ -26,7 +26,7 @@ int main(int argc,char **argv)
         /* check if repo exists */
         if ( ! check_if_repo() )
         {
-            const char errmsg[] = "gitc: Not a git repository\n";
+            const char errmsg[] = "gitc: Not a git repository in current path\n";
             optimized_write_to_stdout(errmsg);
             return E_EXIT;
         }
