@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define VERMSGLEN 14
+#define VERMSGLEN 20
 
 /* enumeration for key press codes in curses mode */
 typedef enum _KEYBIND 
@@ -38,7 +38,7 @@ typedef enum _ERR_CODE { E_REPO_ERR = -2,
 int print_welc_scr(WINDOW*);
 
 /* check for valid git repo */
-bool check_if_repo();
+bool check_if_repo(void);
 
 /* print error if git repo not found */
 int print_git_repo_error(WINDOW*);
@@ -46,11 +46,14 @@ int print_git_repo_error(WINDOW*);
 /* grab repo details */
 int repo_commit_menu(WINDOW*);
 
-int get_commit_count();
+int get_commit_count(void);
 
-int wprint_text_mid(WINDOW*,char*);
+int wprint_text_mid(WINDOW*,const char*);
 
-void print_gitc_ver();
+int print_gitc_ver(void);
+
+/* a really optimized way to write to stdout that is shamelessly stolen from GNU yes */
+int optimized_write_to_stdout(const char[]); 
 
 char *const_to_str(const char*);
 /* end include guards*/

@@ -9,12 +9,29 @@
 #endif
 #define SRC "gitc.c"
 
+
+int optimized_write_to_stdout(const char str[])
+{
+    char * buf = malloc(strlen(str)+1);
+    if ( buf )
+        memcpy(buf,str,strlen(str)+1);
+    if ( write(1,buf,strlen(str)+1) == 0 )
+    {
+        free(buf);
+        return E_SUCCESS;
+    }
+    else 
+    {   free(buf);
+        return -1;
+    }
+} 
+
 char *const_to_str(const char* cstr)
 {
     if ( cstr )
     {
         char *str = calloc(strlen(cstr)+1,sizeof(*cstr));
-        if ( ! str )
+        if (  ! str )
             fprintf(stdout,"%s: const_to_str() failed!",SRC);
 
         strcpy(str,cstr);
@@ -23,9 +40,12 @@ char *const_to_str(const char* cstr)
     else
         return NULL;
 }
-void print_gitc_ver()
+
+int print_gitc_ver()
 {
-    char vermsg[VERMSGLEN] = "Testing: Unreleased";
+    const char vermsg[] = "gitc version : Testing unreleased\n";
+    optimized_write_to_stdout(vermsg);
+    return E_SUCCESS;
 
 }
 
@@ -84,7 +104,7 @@ int print_welc_scr(WINDOW* win)
 
 
 /* print a char* text in centre of a window */
-int wprint_text_mid(WINDOW *win,char *text)
+int wprint_text_mid(WINDOW *win,const char *text)
 {
     if ( ! win )
         return E_WIN_ERR;
@@ -105,7 +125,12 @@ bool check_if_repo()
     git_libgit2_shutdown();
     return (error == 0);
 }
-
+/*bool check_if_repo_new()
+{
+    git_libgit2_init();
+    git_repositoru *cur_repo = NULL;
+    int error;
+}*/
 /* get commit_count of a repo in cwd,-1 if no repo found */
 int get_commit_count()
 {
