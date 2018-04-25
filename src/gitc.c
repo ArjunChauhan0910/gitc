@@ -120,7 +120,7 @@ bool check_if_repo()
     git_libgit2_init();
     git_repository *cur_repo = NULL;
     int error;
-    error = git_repository_open_ext(&cur_repo,".",0,NULL);
+    error = git_repository_open_ext(&cur_repo,".",GIT_REPOSITORY_OPEN_NO_SEARCH,NULL);
     git_repository_free(cur_repo);
     git_libgit2_shutdown();
     return (error == 0);

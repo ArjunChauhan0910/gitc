@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define VERMSGLEN 20
 
 /* enumeration for key press codes in curses mode */
 typedef enum _KEYBIND 
