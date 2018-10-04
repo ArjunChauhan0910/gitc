@@ -10,22 +10,6 @@
 #define SRC "gitc.c"
 
 
-int optimized_write_to_stdout(const char str[])
-{
-    char * buf = malloc(strlen(str)+1);
-    if ( buf )
-        memcpy(buf,str,strlen(str)+1);
-    if ( write(1,buf,strlen(str)+1) == 0 )
-    {
-        free(buf);
-        return E_SUCCESS;
-    }
-    else 
-    {   free(buf);
-        return -1;
-    }
-} 
-
 char *const_to_str(const char* cstr)
 {
     if ( cstr )
@@ -52,7 +36,7 @@ int print_gitc_ver()
 /* body for welcome screen printing */
 int print_welc_scr(WINDOW* win)
 {
-    
+
     /* check if curses window exists */
     if ( ! win )
         return E_WIN_ERR;
@@ -83,7 +67,7 @@ int print_welc_scr(WINDOW* win)
         if ( keypress == KEY_RESIZE )
         {
 
-            
+
             /* clear window and reprint all intro messages */               /* make this more resuable */
             wclear(win);
             getmaxyx(win,row,col);
@@ -91,7 +75,7 @@ int print_welc_scr(WINDOW* win)
             mvwprintw(win,row/2,(col-strlen(des_msg_centre))/2,"%s",des_msg_centre);
             mvwprintw(win,(row/2)+2,(col-strlen(fol_msg))/2,"%s",fol_msg);
             mvwprintw(win,(row-2),(col-strlen(exit_msg))/2,"%s",exit_msg);
-            
+
             /* refresh all changes to win */
             wrefresh(win);
         }
@@ -135,7 +119,7 @@ bool check_if_repo()
 int get_commit_count()
 {
 	int count = 0;
-	
+
     /* initialize libgit2 */
     git_libgit2_init();
 	git_repository *repo = NULL;
@@ -143,7 +127,7 @@ int get_commit_count()
 
     /* open repository */
 	int open_error = git_repository_open_ext(&repo,".",0,NULL);
-    
+
     /* throw error if repo open does not succeed */
     if ( open_error != 0 )
         return E_REPO_ERR;
@@ -238,7 +222,7 @@ int repo_commit_menu(WINDOW *win)
 
     /* create new menu based on items array */
     commit_summary_menu = new_menu((ITEM**)menu_items);
-    
+
     /* set menu spacing and menu size */
     set_menu_format(commit_summary_menu,row,1);
     set_menu_spacing(commit_summary_menu,TABSIZE-4,1,0);
@@ -246,7 +230,7 @@ int repo_commit_menu(WINDOW *win)
 
     /* print menu on screen with given dimensions */
     post_menu(commit_summary_menu);
-    wrefresh(win); 
+    wrefresh(win);
 
 
     /* menu key press, exit if user presses q */
@@ -254,7 +238,7 @@ int repo_commit_menu(WINDOW *win)
     {
         switch (keypress)
         {
-            
+
             /* UP arrow press or VI up press */
             case VI_KEY_DOWN:
             case DOWN_KEY:
@@ -271,13 +255,13 @@ int repo_commit_menu(WINDOW *win)
             case ENTER_KEY:
                 if ( enter_keypressed == 0 )
                 {
-                    if ( commit_diff_win  == NULL ) 
+                    if ( commit_diff_win  == NULL )
                         commit_diff_win = newwin (row,col/2,col/2,0);
                     enter_keypressed = 1;
                 }
                 break;
-            
-            /* resize key press to handle window resizing */    
+
+            /* resize key press to handle window resizing */
             case KEY_RESIZE:
                 /* get new dimensions of window after resizing */
                 getmaxyx (win,row,col);
@@ -291,7 +275,7 @@ int repo_commit_menu(WINDOW *win)
 
                 /* resize commit subwindow as well if present */
                 if ( enter_keypressed == 1 )
-                {   
+                {
                     wresize(commit_diff_win,row,col/2);
                     mvwin(commit_diff_win,0,col/2);
                     getmaxyx(commit_diff_win,sub_row,sub_col);
@@ -316,11 +300,11 @@ int repo_commit_menu(WINDOW *win)
         if ( enter_keypressed  == 1)
         {
             selected_item = current_item(commit_summary_menu);
-            if( commit_diff_win != NULL ) 
+            if( commit_diff_win != NULL )
                 delwin(commit_diff_win);
             commit_diff_win = newwin(row,col/2,0,col/2);
             box(commit_diff_win,0,0);
-            
+
             /* get commit id from selected item in menu */
             const char  *oid_str = item_description(current_item(commit_summary_menu));
             git_oid_fromstr(&sel_oid,oid_str);
@@ -352,7 +336,7 @@ int repo_commit_menu(WINDOW *win)
             git_buf_free(&gbuf);
             git_diff_stats_free(stats);
             wrefresh(commit_diff_win);
-            
+
         }
         wrefresh(win);
 
@@ -362,7 +346,7 @@ int repo_commit_menu(WINDOW *win)
     unpost_menu(commit_summary_menu);
     for (i = 0; i < commit_count; i++ )
         free_item ( menu_items[i] );
-    
+
     /* menu cleanup */
     free_menu( commit_summary_menu );
     wrefresh(win);
@@ -373,5 +357,5 @@ int repo_commit_menu(WINDOW *win)
     git_repository_free(root_repo);
     git_libgit2_shutdown();
     return E_SUCCESS;
-                
+
 }

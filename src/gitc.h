@@ -15,15 +15,15 @@
 
 
 /* enumeration for key press codes in curses mode */
-typedef enum _KEYBIND 
-{ 
+typedef enum _KEYBIND
+{
     RES_KEY = KEY_RESIZE,
     UP_KEY = KEY_UP,
     DOWN_KEY = KEY_DOWN,
     ENTER_KEY = 10,
     VI_KEY_UP = 107,
     VI_KEY_DOWN = 106,
-    EXIT_KEY = 113 } 
+    EXIT_KEY = 113 }
 keybind;
 
 /* enumeration for exit return codes througout gitc */
@@ -52,7 +52,6 @@ int wprint_text_mid(WINDOW*,const char*);
 int print_gitc_ver(void);
 
 /* a really optimized way to write to stdout that is shamelessly stolen from GNU yes */
-int optimized_write_to_stdout(const char[]); 
 
 char *const_to_str(const char*);
 /* end include guards*/

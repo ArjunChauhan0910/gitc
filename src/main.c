@@ -11,7 +11,7 @@
 #include <locale.h>
 int main(int argc,char **argv)
 {
-    
+
     /* set locale to C to speed up performance */
     setlocale(LC_ALL,"C");
 
@@ -22,22 +22,22 @@ int main(int argc,char **argv)
     }
 
     else
-    { 
+    {
         /* check if repo exists */
         if ( ! check_if_repo() )
         {
             const char errmsg[] = "gitc: Not a git repository in current path\n";
-            optimized_write_to_stdout(errmsg);
+            printf(errmsg);
             return E_EXIT;
         }
-    
+
         /* initialize curses */
         WINDOW *main_win = initscr();
         curs_set(0);
         cbreak();
         keypad(main_win,TRUE);
         noecho();
-    
+
         /* exit main app if user triggers exit at welcome screen */
         if( print_welc_scr(main_win) == E_EXIT )
         {
@@ -47,10 +47,10 @@ int main(int argc,char **argv)
             return E_EXIT;
         }
         /* continue with main app after main screen if exit is not triggered */
-        repo_commit_menu(main_win);   
+        repo_commit_menu(main_win);
 
-        /* clean up and exit curses on main app exit */  
-        curs_set(1); 
+        /* clean up and exit curses on main app exit */
+        curs_set(1);
         nocbreak();
         endwin();
     }
