@@ -2,6 +2,7 @@
  * A TUI frontend for the Git VCS
  * License:TBD
  * Author:Aditya Visvanathan
+ *Licence: MIT
  * Version : 1.0.0
  */
 #define EXIT_KEY_PRESS 113
